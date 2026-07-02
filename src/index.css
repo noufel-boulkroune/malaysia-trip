@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; background: #0A0A0A; }
+  body { background: #0A0A0A; color: white; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #0A0A0A; }
+  ::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 4px; }
+}
+
+@layer utilities {
+  .card {
+    @apply bg-surface-card border border-surface-border rounded-2xl;
+  }
+  .card-elevated {
+    @apply bg-surface-elevated border border-surface-border rounded-2xl;
+  }
+  .btn-primary {
+    @apply bg-brand-red hover:bg-brand-red-dark text-white font-semibold rounded-xl transition-colors;
+  }
+  .btn-ghost {
+    @apply bg-surface-elevated hover:bg-surface-hover border border-surface-border text-white font-medium rounded-xl transition-colors;
+  }
+  .tag {
+    @apply text-xs font-semibold px-2.5 py-1 rounded-lg;
+  }
+}

@@ -1,0 +1,284 @@
+import { useState, useEffect } from 'react';
+import { Bed, ExternalLink, MapPin, ChevronDown, ChevronUp, CheckCircle2, Circle, AlertTriangle } from 'lucide-react';
+import { HOTELS, HOTEL_BUDGET_MAX } from '../data/tripData';
+
+const STORAGE_KEY = 'mt-bookings';
+
+function loadBookings() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}'); } catch { return {}; }
+}
+function saveBookings(b) { localStorage.setItem(STORAGE_KEY, JSON.stringify(b)); }
+
+const TIER_STYLE = {
+  Budget:      { badge: 'bg-white/10 text-white/60 border-white/10', border: 'border-surface-border', dot: 'bg-white/30' },
+  'Mid-range': { badge: 'bg-brand-gold/15 text-brand-gold border-brand-gold/20', border: 'border-brand-gold/20', dot: 'bg-brand-gold' },
+  Splurge:     { badge: 'bg-brand-red/15 text-brand-red border-brand-red/20', border: 'border-brand-red/20', dot: 'bg-brand-red' },
+};
+
+function HotelCard({ hotel, nightCount, bookings, onToggle, onUpdatePaid }) {
+  const s = TIER_STYLE[hotel.tier];
+  const state = bookings[hotel.presetId];
+  const isBooked = state?.booked ?? false;
+  const estimatedTotal = Math.round((hotel.estMin + hotel.estMax) / 2) * nightCount;
+
+  return (
+    <div className={`bg-surface-elevated border rounded-2xl p-4 space-y-3 transition-colors ${
+      isBooked ? 'border-green-500/30 bg-green-500/5' : s.border
+    }`}>
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex-1 min-w-0">
+          <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-lg border mb-2 ${s.badge}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
+            {hotel.tier}
+          </span>
+          <h4 className="font-display font-bold text-base leading-tight">{hotel.name}</h4>
+        </div>
+        <div className="flex items-start gap-2 shrink-0">
+          <div className="text-right">
+            <p className="text-sm font-bold text-white">{hotel.price}</p>
+            <p className="text-xs text-white/40">{hotel.pricePerPerson}</p>
+          </div>
+          <button
+            onClick={() => onToggle(hotel, nightCount)}
+            className="mt-0.5"
+            title={isBooked ? 'Unbook' : 'Mark as booked'}
+          >
+            {isBooked
+              ? <CheckCircle2 size={18} className="text-green-400" />
+              : <Circle size={18} className="text-white/20 hover:text-white/50 transition-colors" />
+            }
+          </button>
+        </div>
+      </div>
+
+      <ul className="space-y-1">
+        {hotel.highlights.map((h, i) => (
+          <li key={i} className="flex items-start gap-2 text-xs text-white/55">
+            <span className="text-green-400 mt-px shrink-0">✓</span>
+            {h}
+          </li>
+        ))}
+      </ul>
+
+      {/* Total cost estimate for full stay */}
+      <div className="flex items-center justify-between px-2.5 py-2 bg-surface-bg rounded-xl border border-surface-border text-xs">
+        <span className="text-white/40">{nightCount} nights total</span>
+        <span className="font-mono font-bold text-white/70">
+          RM {hotel.estMin * nightCount}–{hotel.estMax * nightCount}
+        </span>
+      </div>
+
+      {/* Paid amount editor when booked */}
+      {isBooked && state && (
+        <div className="flex items-center gap-2 px-2.5 py-2 bg-surface-bg rounded-xl border border-green-500/20">
+          <span className="text-xs text-white/40 shrink-0">Paid:</span>
+          <span className="text-xs text-white/40 shrink-0">RM</span>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            value={state.paid}
+            onChange={e => onUpdatePaid(hotel.presetId, e.target.value)}
+            className="flex-1 min-w-0 bg-transparent text-sm text-white font-mono focus:outline-none"
+          />
+          <span className="text-xs text-green-400 shrink-0">✓</span>
+        </div>
+      )}
+
+      <div className="flex gap-2 pt-1">
+        <a
+          href={hotel.bookUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-brand-red hover:bg-brand-red-dark text-white text-xs font-bold rounded-xl transition-colors"
+        >
+          Booking.com <ExternalLink size={11} />
+        </a>
+        <a
+          href={hotel.agodaUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-surface-hover hover:bg-surface-border border border-surface-border text-white/70 hover:text-white text-xs font-semibold rounded-xl transition-colors"
+        >
+          Agoda <ExternalLink size={11} />
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function CityBlock({ city, bookings, onToggle, onUpdatePaid }) {
+  const [open, setOpen] = useState(false);
+  const bookedOption = city.options.find(h => bookings[h.presetId]?.booked);
+
+  return (
+    <div className="card rounded-2xl overflow-hidden">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center gap-4 p-5 hover:bg-surface-elevated transition-colors text-left"
+      >
+        <div className="w-10 h-10 rounded-xl bg-brand-red/10 border border-brand-red/20 flex items-center justify-center shrink-0">
+          <Bed size={18} className="text-brand-red" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-display font-bold text-lg">{city.city}</h3>
+          <div className="flex items-center gap-3 mt-0.5 flex-wrap">
+            <span className="text-xs text-white/40 flex items-center gap-1">
+              {city.nights}
+            </span>
+            {bookedOption && (
+              <span className="text-xs text-green-400 flex items-center gap-1">
+                <CheckCircle2 size={10} /> {bookedOption.name}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="shrink-0 text-white/30">
+          {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+        </div>
+      </button>
+
+      {open && (
+        <div className="px-5 pb-5 space-y-3 animate-slide-up">
+          <p className="text-xs text-white/40 pb-1 border-t border-surface-border pt-4 flex items-center gap-1.5">
+            <MapPin size={11} className="text-brand-red" />
+            {city.area}
+          </p>
+          {city.options.map((h) => (
+            <HotelCard
+              key={h.presetId}
+              hotel={h}
+              nightCount={city.nightCount}
+              bookings={bookings}
+              onToggle={onToggle}
+              onUpdatePaid={onUpdatePaid}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function HotelsSection() {
+  const [bookings, setBookings] = useState(loadBookings);
+
+  useEffect(() => {
+    const onStorage = () => setBookings(loadBookings());
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
+  function toggleHotel(hotel, nightCount) {
+    setBookings(prev => {
+      const cur = prev[hotel.presetId];
+      let next;
+      if (cur?.booked) {
+        next = { ...prev };
+        delete next[hotel.presetId];
+      } else {
+        // Unbook any other option for same city
+        const siblings = HOTELS.flatMap(c => c.options).filter(h =>
+          h.presetId !== hotel.presetId &&
+          HOTELS.find(c => c.options.includes(hotel) && c.options.includes(h))
+        );
+        next = { ...prev };
+        siblings.forEach(s => { if (next[s.presetId]?.booked) delete next[s.presetId]; });
+        next[hotel.presetId] = {
+          booked: true,
+          paid: Math.round((hotel.estMin + hotel.estMax) / 2) * nightCount,
+        };
+      }
+      saveBookings(next);
+      return next;
+    });
+  }
+
+  function updatePaid(presetId, val) {
+    const num = parseFloat(val);
+    setBookings(prev => {
+      const next = { ...prev, [presetId]: { ...prev[presetId], paid: isNaN(num) ? 0 : num } };
+      saveBookings(next);
+      return next;
+    });
+  }
+
+  // Compute total hotel spend from booked hotel presetIds
+  const allHotelPresetIds = new Set(HOTELS.flatMap(c => c.options.map(h => h.presetId)));
+  const hotelSpend = Object.entries(bookings)
+    .filter(([id, b]) => allHotelPresetIds.has(id) && b.booked)
+    .reduce((sum, [, b]) => sum + (b.paid ?? 0), 0);
+
+  const pct = Math.min((hotelSpend / HOTEL_BUDGET_MAX) * 100, 100);
+  const overBudget = hotelSpend > HOTEL_BUDGET_MAX;
+  const nearLimit = pct >= 70 && !overBudget;
+
+  return (
+    <section id="hotels" className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
+      <div className="flex items-end justify-between mb-6">
+        <div>
+          <p className="text-xs text-brand-red font-bold uppercase tracking-widest mb-2">Where to sleep</p>
+          <h2 className="font-display text-3xl sm:text-4xl font-extrabold">Hotels</h2>
+        </div>
+        <p className="text-sm text-white/30 text-right hidden sm:block">
+          3 options per city<br />Budget → Splurge
+        </p>
+      </div>
+
+      {/* Hotel budget bar */}
+      <div className={`mb-6 p-4 rounded-2xl border ${
+        overBudget ? 'border-brand-red/40 bg-brand-red/5'
+        : nearLimit ? 'border-brand-gold/30 bg-brand-gold/5'
+        : 'border-surface-border bg-surface-card'
+      }`}>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            {overBudget && <AlertTriangle size={14} className="text-brand-red" />}
+            <span className="text-xs font-bold text-white/60 uppercase tracking-wide">Hotel Budget</span>
+          </div>
+          <div className="text-right">
+            <span className={`text-sm font-mono font-bold ${overBudget ? 'text-brand-red' : nearLimit ? 'text-brand-gold' : 'text-white'}`}>
+              RM {hotelSpend.toLocaleString()}
+            </span>
+            <span className="text-xs text-white/30 font-mono"> / {HOTEL_BUDGET_MAX.toLocaleString()}</span>
+          </div>
+        </div>
+        <div className="h-2 bg-surface-elevated rounded-full overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${
+              overBudget ? 'bg-brand-red' : nearLimit ? 'bg-brand-gold' : 'bg-green-500'
+            }`}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+        <div className="flex justify-between mt-1.5 text-[11px] text-white/25">
+          <span>RM 0</span>
+          {overBudget
+            ? <span className="text-brand-red font-semibold">RM {(hotelSpend - HOTEL_BUDGET_MAX).toLocaleString()} over max</span>
+            : <span>RM {(HOTEL_BUDGET_MAX - hotelSpend).toLocaleString()} remaining</span>
+          }
+          <span>RM {HOTEL_BUDGET_MAX.toLocaleString()} max</span>
+        </div>
+        {hotelSpend === 0 && (
+          <p className="text-xs text-white/30 mt-2 text-center">Mark a hotel as booked to track spend · Prices are per room for the full stay</p>
+        )}
+      </div>
+
+      <div className="space-y-3">
+        {HOTELS.map(city => (
+          <CityBlock
+            key={city.city}
+            city={city}
+            bookings={bookings}
+            onToggle={toggleHotel}
+            onUpdatePaid={updatePaid}
+          />
+        ))}
+      </div>
+
+      <p className="mt-6 text-xs text-white/25 text-center">
+        All prices per room/night (÷2 for twin-share) · Book 2–3 weeks ahead for July peak season
+      </p>
+    </section>
+  );
+}
