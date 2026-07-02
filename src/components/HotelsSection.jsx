@@ -15,11 +15,20 @@ const TIER_STYLE = {
   Splurge:     { badge: 'bg-brand-red/15 text-brand-red border-brand-red/20', border: 'border-brand-red/20', dot: 'bg-brand-red' },
 };
 
+const EUR = 5; // 1€ ≈ 5 MYR
+const toEur = (rm) => Math.round(rm / EUR);
+
 function HotelCard({ hotel, nightCount, bookings, onToggle, onUpdatePaid }) {
   const s = TIER_STYLE[hotel.tier];
   const state = bookings[hotel.presetId];
   const isBooked = state?.booked ?? false;
-  const estimatedTotal = Math.round((hotel.estMin + hotel.estMax) / 2) * nightCount;
+
+  // Per-person (÷2 twin-share) totals for the full stay
+  const ppMinTotal = Math.round((hotel.estMin / 2) * nightCount);
+  const ppMaxTotal = Math.round((hotel.estMax / 2) * nightCount);
+  // Full room total
+  const roomMinTotal = hotel.estMin * nightCount;
+  const roomMaxTotal = hotel.estMax * nightCount;
 
   return (
     <div className={`bg-surface-elevated border rounded-2xl p-4 space-y-3 transition-colors ${
@@ -35,8 +44,9 @@ function HotelCard({ hotel, nightCount, bookings, onToggle, onUpdatePaid }) {
         </div>
         <div className="flex items-start gap-2 shrink-0">
           <div className="text-right">
-            <p className="text-sm font-bold text-white">{hotel.price}</p>
-            <p className="text-xs text-white/40">{hotel.pricePerPerson}</p>
+            <p className="text-xs text-white/40 mb-0.5">per night / room</p>
+            <p className="text-sm font-bold text-white font-mono">RM {hotel.estMin}–{hotel.estMax}</p>
+            <p className="text-xs text-white/30 font-mono">≈ {toEur(hotel.estMin)}–{toEur(hotel.estMax)} €</p>
           </div>
           <button
             onClick={() => onToggle(hotel, nightCount)}
@@ -60,12 +70,22 @@ function HotelCard({ hotel, nightCount, bookings, onToggle, onUpdatePaid }) {
         ))}
       </ul>
 
-      {/* Total cost estimate for full stay */}
-      <div className="flex items-center justify-between px-2.5 py-2 bg-surface-bg rounded-xl border border-surface-border text-xs">
-        <span className="text-white/40">{nightCount} nights total</span>
-        <span className="font-mono font-bold text-white/70">
-          RM {hotel.estMin * nightCount}–{hotel.estMax * nightCount}
-        </span>
+      {/* Total cost breakdown — room vs per person */}
+      <div className="rounded-xl border border-surface-border bg-surface-bg overflow-hidden text-xs">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-surface-border">
+          <span className="text-white/40">Room total ({nightCount} nights)</span>
+          <div className="text-right">
+            <span className="font-mono font-bold text-white/60">RM {roomMinTotal}–{roomMaxTotal}</span>
+            <span className="text-white/25 font-mono ml-1.5">≈ {toEur(roomMinTotal)}–{toEur(roomMaxTotal)} €</span>
+          </div>
+        </div>
+        <div className="flex items-center justify-between px-3 py-2 bg-green-500/5">
+          <span className="text-green-400 font-semibold">Your share (÷2)</span>
+          <div className="text-right">
+            <span className="font-mono font-bold text-green-400">RM {ppMinTotal}–{ppMaxTotal}</span>
+            <span className="text-green-400/50 font-mono ml-1.5">≈ {toEur(ppMinTotal)}–{toEur(ppMaxTotal)} €</span>
+          </div>
+        </div>
       </div>
 
       {/* Paid amount editor when booked */}
@@ -122,16 +142,19 @@ function CityBlock({ city, bookings, onToggle, onUpdatePaid }) {
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-display font-bold text-lg">{city.city}</h3>
-          <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-            <span className="text-xs text-white/40 flex items-center gap-1">
-              {city.nights}
-            </span>
-            {bookedOption && (
-              <span className="text-xs text-green-400 flex items-center gap-1">
-                <CheckCircle2 size={10} /> {bookedOption.name}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+            {city.dateRanges.map((r, i) => (
+              <span key={i} className="text-xs font-mono font-semibold text-brand-gold bg-brand-gold/10 border border-brand-gold/20 px-2 py-0.5 rounded-lg">
+                {r.checkIn} → {r.checkOut}
               </span>
-            )}
+            ))}
+            <span className="text-xs text-white/30">{city.nights}</span>
           </div>
+          {bookedOption && (
+            <span className="text-xs text-green-400 flex items-center gap-1 mt-1">
+              <CheckCircle2 size={10} /> {bookedOption.name}
+            </span>
+          )}
         </div>
         <div className="shrink-0 text-white/30">
           {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
@@ -234,13 +257,14 @@ export default function HotelsSection() {
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             {overBudget && <AlertTriangle size={14} className="text-brand-red" />}
-            <span className="text-xs font-bold text-white/60 uppercase tracking-wide">Hotel Budget</span>
+            <span className="text-xs font-bold text-white/60 uppercase tracking-wide">Hotel Budget (room total)</span>
           </div>
           <div className="text-right">
             <span className={`text-sm font-mono font-bold ${overBudget ? 'text-brand-red' : nearLimit ? 'text-brand-gold' : 'text-white'}`}>
               RM {hotelSpend.toLocaleString()}
             </span>
             <span className="text-xs text-white/30 font-mono"> / {HOTEL_BUDGET_MAX.toLocaleString()}</span>
+            <p className="text-[11px] text-white/20 font-mono">≈ {toEur(hotelSpend)} € / {toEur(HOTEL_BUDGET_MAX)} € max pp</p>
           </div>
         </div>
         <div className="h-2 bg-surface-elevated rounded-full overflow-hidden">

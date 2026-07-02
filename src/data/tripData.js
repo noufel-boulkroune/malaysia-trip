@@ -5,20 +5,20 @@ const fp = (name) =>
   `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(name)}?width=1200`;
 
 const W = {
-  petronas:        fp('Petronas_Towers_at_Night_-_from_the_base_upwards.jpg'),
-  klSkyline:       fp('Kl-skyline-at-night-2022.jpg'),
-  jalanAlor:       fp('Jalan_Alor_-_Kuala_Lumpur.jpg'),
-  batuCaves:       fp('Batu_Caves_stairs_2022-05.jpg'),
-  genting:         fp('View_from_Awana_Skyway_(230918)_27.jpg'),
-  georgeTown:      fp('Beach_Street,_George_Town_02.jpg'),
-  penangArt:       fp('Penang_-_Boy_on_a_Bike.JPG'),
-  monkeyBeach:     fp('Monkeybeach08.jpg'),
-  pantaiCenang:    fp('Langkawi_Pantai_Cenang.jpg'),
-  skyCab:          fp('Langkawi_sky_bridge.jpg'),
+  petronas: fp('Petronas_Towers_at_Night_-_from_the_base_upwards.jpg'),
+  klSkyline: fp('Kl-skyline-at-night-2022.jpg'),
+  jalanAlor: fp('Jalan_Alor_-_Kuala_Lumpur.jpg'),
+  batuCaves: fp('Batu_Caves_stairs_2022-05.jpg'),
+  genting: fp('View_from_Awana_Skyway_(230918)_27.jpg'),
+  georgeTown: fp('Beach_Street,_George_Town_02.jpg'),
+  penangArt: fp('Penang_-_Boy_on_a_Bike.JPG'),
+  monkeyBeach: fp('Monkeybeach08.jpg'),
+  pantaiCenang: fp('Langkawi_Pantai_Cenang.jpg'),
+  skyCab: fp('Langkawi_sky_bridge.jpg'),
   orientalVillage: fp('Oriental_Village_in_Langkawi.JPG'),
-  kilim:           fp('Kilim_Geoforest_Park,_Langkawi.jpg'),
-  boh:             fp('Cameron_Highlands_Boh_Tea_Plantation.jpg'),
-  mossyForest:     fp('Gunung_Irau_(The_Mossy_Forest)_(26119232711).jpg'),
+  kilim: fp('Kilim_Geoforest_Park,_Langkawi.jpg'),
+  boh: fp('Cameron_Highlands_Boh_Tea_Plantation.jpg'),
+  mossyForest: fp('Gunung_Irau_(The_Mossy_Forest)_(26119232711).jpg'),
 };
 
 export const TRIP_META = {
@@ -85,19 +85,19 @@ export const BUDGET = [
 ];
 
 export const BOOKINGS = [
-  { item: 'Petronas Twin Towers',     price: 'RM150–160 pp', source: 'petronastwintowers.com.my', url: 'https://eticket.petronastwintowers.com.my', image: W.petronas,     presetId: 'b1' },
-  { item: 'Genting SkyWorlds',        price: 'RM168 online', source: 'gentingskyworlds.com',      url: 'https://www.gentingskyworlds.com',          image: W.genting,      presetId: 'b3' },
-  { item: 'Awana SkyWay cable car',   price: 'RM22 return',  source: 'rwgenting.com',             url: 'https://www.rwgenting.com',                 image: W.genting,      presetId: 'b2' },
-  { item: 'Bus KL → Penang',          price: 'RM45–90 pp',   source: 'easybook.com',              url: 'https://www.easybook.com',                  image: W.georgeTown,   presetId: 'b4' },
-  { item: 'Penang Hill funicular',    price: 'RM30–35 pp',   source: 'penanghill.gov.my',         url: 'https://www.penanghill.gov.my',             image: W.georgeTown,   presetId: 'b5' },
-  { item: 'ESCAPE Penang',            price: 'RM182–190 pp', source: 'escape.my',                 url: 'https://escape.my/pg/buy-tickets',          image: W.monkeyBeach,  presetId: 'b6' },
-  { item: 'Ferry Penang → Langkawi',  price: 'RM70–90 pp',   source: 'Traveloka',                 url: 'https://www.traveloka.com',                 image: W.pantaiCenang, presetId: 'b7' },
-  { item: 'Langkawi SkyCab + Bridge', price: 'RM97 pp',      source: 'panoramalangkawi.com',      url: 'https://www.panoramalangkawi.com',          image: W.skyCab,       presetId: 'b8' },
-  { item: 'Kilim kayak + boat tour',  price: 'RM160–205 pp', source: 'langkawigotours.com',       url: 'https://langkawigotours.com/mangrove-kayaking-tour-langkawi', image: W.kilim, presetId: 'b9' },
-  { item: 'Jet ski tour',             price: 'RM225–300 pp', source: 'langkawigotours.com',       url: 'https://langkawigotours.com/jet-ski-tour-langkawi',           image: W.pantaiCenang, presetId: 'b10' },
-  { item: 'Ferry Langkawi → KL',      price: 'RM35–40 pp',   source: 'Traveloka',                 url: 'https://www.traveloka.com',                 image: W.pantaiCenang, presetId: 'b11' },
-  { item: 'Bus → Cameron Highlands',  price: 'RM35–45 pp',   source: 'easybook.com',              url: 'https://www.easybook.com',                  image: W.boh,          presetId: 'b12' },
-  { item: 'MDAC arrival card',        price: 'Free',         source: 'imigresen-online.imi.gov.my', url: 'https://imigresen-online.imi.gov.my',    image: W.petronas,     presetId: null },
+  { item: 'Petronas Twin Towers', price: 'RM150–160 pp', source: 'petronastwintowers.com.my', url: 'https://eticket.petronastwintowers.com.my', image: W.petronas, presetId: 'b1' },
+  { item: 'Genting SkyWorlds', price: 'RM168 online', source: 'gentingskyworlds.com', url: 'https://www.gentingskyworlds.com', image: W.genting, presetId: 'b3' },
+  { item: 'Awana SkyWay cable car', price: 'RM22 return', source: 'rwgenting.com', url: 'https://www.rwgenting.com', image: W.genting, presetId: 'b2' },
+  { item: 'Bus KL → Penang', price: 'RM45–90 pp', source: 'easybook.com', url: 'https://www.easybook.com', image: W.georgeTown, presetId: 'b4' },
+  { item: 'Penang Hill funicular', price: 'RM30–35 pp', source: 'penanghill.gov.my', url: 'https://www.penanghill.gov.my', image: W.georgeTown, presetId: 'b5' },
+  { item: 'ESCAPE Penang', price: 'RM182–190 pp', source: 'escape.my', url: 'https://escape.my/pg/buy-tickets', image: W.monkeyBeach, presetId: 'b6' },
+  { item: 'Ferry Penang → Langkawi', price: 'RM70–90 pp', source: 'Traveloka', url: 'https://www.traveloka.com', image: W.pantaiCenang, presetId: 'b7' },
+  { item: 'Langkawi SkyCab + Bridge', price: 'RM97 pp', source: 'panoramalangkawi.com', url: 'https://www.panoramalangkawi.com', image: W.skyCab, presetId: 'b8' },
+  { item: 'Kilim kayak + boat tour', price: 'RM160–205 pp', source: 'langkawigotours.com', url: 'https://langkawigotours.com/mangrove-kayaking-tour-langkawi', image: W.kilim, presetId: 'b9' },
+  { item: 'Jet ski tour', price: 'RM225–300 pp', source: 'langkawigotours.com', url: 'https://langkawigotours.com/jet-ski-tour-langkawi', image: W.pantaiCenang, presetId: 'b10' },
+  { item: 'Ferry Langkawi → KL', price: 'RM35–40 pp', source: 'Traveloka', url: 'https://www.traveloka.com', image: W.pantaiCenang, presetId: 'b11' },
+  { item: 'Bus → Cameron Highlands', price: 'RM35–45 pp', source: 'easybook.com', url: 'https://www.easybook.com', image: W.boh, presetId: 'b12' },
+  { item: 'MDAC arrival card', price: 'Free', source: 'imigresen-online.imi.gov.my', url: 'https://imigresen-online.imi.gov.my', image: W.petronas, presetId: null },
 ];
 
 // Max hotel budget for the trip (budget tier, room cost, 13 nights)
@@ -108,6 +108,7 @@ export const HOTELS = [
     city: 'Kuala Lumpur',
     nights: '3 nights (Days 1–3) + 1 night (Day 13)',
     nightCount: 4,
+    dateRanges: [{ checkIn: '22 Jul', checkOut: '25 Jul' }, { checkIn: '03 Aug', checkOut: '04 Aug' }],
     area: 'Bukit Bintang — walkable to Jalan Alor, monorail, malls',
     options: [
       {
@@ -149,6 +150,7 @@ export const HOTELS = [
     city: 'Penang',
     nights: '3 nights (Days 4–6)',
     nightCount: 3,
+    dateRanges: [{ checkIn: '25 Jul', checkOut: '28 Jul' }],
     area: 'George Town — Chulia St / Love Lane, walk to all street art & hawker stalls',
     options: [
       {
@@ -190,6 +192,7 @@ export const HOTELS = [
     city: 'Langkawi',
     nights: '4 nights (Days 7–10)',
     nightCount: 4,
+    dateRanges: [{ checkIn: '28 Jul', checkOut: '01 Aug' }],
     area: 'Pantai Cenang — beach strip, restaurants, scooter hire all on your doorstep',
     options: [
       {
@@ -231,6 +234,7 @@ export const HOTELS = [
     city: 'Cameron Highlands',
     nights: '2 nights (Days 11–12)',
     nightCount: 2,
+    dateRanges: [{ checkIn: '01 Aug', checkOut: '03 Aug' }],
     area: 'Tanah Rata town centre — walking distance to restaurants, bus stop & tour operators',
     options: [
       {
@@ -316,10 +320,10 @@ export const DAYS = [
     tagline: 'Land, settle in Bukit Bintang, first taste of KL',
     cover: W.petronas,
     images: [
-      { src: W.petronas,   caption: 'Petronas Towers lit up — your first KL view' },
-      { src: W.klSkyline,  caption: 'Bukit Bintang — home base for 3 nights' },
-      { src: W.jalanAlor,  caption: 'Jalan Alor night food street' },
-      { src: W.petronas,   caption: 'KLCC Park fountain with towers behind' },
+      { src: W.petronas, caption: 'Petronas Towers lit up — your first KL view' },
+      { src: W.klSkyline, caption: 'Bukit Bintang — home base for 3 nights' },
+      { src: W.jalanAlor, caption: 'Jalan Alor night food street' },
+      { src: W.petronas, caption: 'KLCC Park fountain with towers behind' },
     ],
     video: { title: 'Kuala Lumpur travel guide 2024' },
     stay: 'Bukit Bintang guesthouse (twin-share)',
@@ -341,8 +345,8 @@ export const DAYS = [
     cover: W.batuCaves,
     images: [
       { src: W.batuCaves, caption: 'Batu Caves Malaysia — 272 rainbow steps' },
-      { src: W.petronas,  caption: 'Petronas Twin Towers observation deck at dusk' },
-      { src: W.petronas,  caption: 'KLCC Park & Suria mall' },
+      { src: W.petronas, caption: 'Petronas Twin Towers observation deck at dusk' },
+      { src: W.petronas, caption: 'KLCC Park & Suria mall' },
       { src: W.jalanAlor, caption: 'Street food dinner' },
     ],
     video: { title: 'Batu Caves and Petronas Towers Kuala Lumpur Malaysia' },
@@ -365,10 +369,10 @@ export const DAYS = [
     tagline: 'Cable car, Chin Swee Temple, optional theme parks',
     cover: W.genting,
     images: [
-      { src: W.genting,     caption: 'Awana SkyWay over rainforest — Malaysia' },
-      { src: W.genting,     caption: 'Genting Highlands peak in the clouds' },
+      { src: W.genting, caption: 'Awana SkyWay over rainforest — Malaysia' },
+      { src: W.genting, caption: 'Genting Highlands peak in the clouds' },
       { src: W.mossyForest, caption: 'Chin Swee Caves Temple stop' },
-      { src: W.klSkyline,   caption: 'SkyAvenue mall at the Genting peak' },
+      { src: W.klSkyline, caption: 'SkyAvenue mall at the Genting peak' },
     ],
     video: { title: 'Genting Highlands Awana SkyWay Malaysia 2024' },
     stay: 'Bukit Bintang (last KL night)',
@@ -395,9 +399,9 @@ export const DAYS = [
     cover: W.georgeTown,
     images: [
       { src: W.georgeTown, caption: 'George Town heritage shophouses — Penang' },
-      { src: W.penangArt,  caption: 'Colourful street art alleys' },
+      { src: W.penangArt, caption: 'Colourful street art alleys' },
       { src: W.georgeTown, caption: 'Chulia Street / Love Lane area' },
-      { src: W.penangArt,  caption: 'First Penang evening wander' },
+      { src: W.penangArt, caption: 'First Penang evening wander' },
     ],
     video: { title: 'George Town Penang Malaysia travel guide 2024' },
     stay: 'George Town — Chulia St / Love Lane',
@@ -419,7 +423,7 @@ export const DAYS = [
     tagline: 'Relaxed murals, Penang Hill, Kek Lok Si',
     cover: W.penangArt,
     images: [
-      { src: W.penangArt,  caption: 'Famous George Town street murals — Penang' },
+      { src: W.penangArt, caption: 'Famous George Town street murals — Penang' },
       { src: W.georgeTown, caption: 'Penang Hill funicular views' },
       { src: W.georgeTown, caption: 'Kek Lok Si Temple pagoda' },
       { src: W.georgeTown, caption: 'Line Clear Nasi Kandar' },
@@ -444,8 +448,8 @@ export const DAYS = [
     cover: W.monkeyBeach,
     images: [
       { src: W.monkeyBeach, caption: 'Monkey Beach (Pantai Kerachut) — Penang Malaysia' },
-      { src: W.penangArt,   caption: 'ESCAPE Penang adventure park' },
-      { src: W.georgeTown,  caption: 'Penang National Park coastline' },
+      { src: W.penangArt, caption: 'ESCAPE Penang adventure park' },
+      { src: W.georgeTown, caption: 'Penang National Park coastline' },
       { src: W.monkeyBeach, caption: 'Beach day before ESCAPE' },
     ],
     video: { title: 'ESCAPE Penang adventure water park Malaysia review 2024' },
@@ -471,7 +475,7 @@ export const DAYS = [
     images: [
       { src: W.pantaiCenang, caption: 'Pantai Cenang beach — Langkawi Malaysia' },
       { src: W.pantaiCenang, caption: 'Langkawi turquoise waters' },
-      { src: W.kilim,        caption: 'Langkawi island from the sea' },
+      { src: W.kilim, caption: 'Langkawi island from the sea' },
       { src: W.pantaiCenang, caption: 'Scooter rental — explore the island' },
     ],
     video: { title: 'Langkawi Malaysia island guide 2024' },
@@ -494,10 +498,10 @@ export const DAYS = [
     tagline: 'World\'s steepest cable car + curved sky bridge',
     cover: W.skyCab,
     images: [
-      { src: W.skyCab,          caption: 'Langkawi Sky Bridge — Malaysia' },
+      { src: W.skyCab, caption: 'Langkawi Sky Bridge — Malaysia' },
       { src: W.orientalVillage, caption: 'Oriental Village base station — Langkawi' },
-      { src: W.skyCab,          caption: 'Cable car over Machinchang mountain' },
-      { src: W.pantaiCenang,    caption: 'Pool afternoon at Pantai Cenang' },
+      { src: W.skyCab, caption: 'Cable car over Machinchang mountain' },
+      { src: W.pantaiCenang, caption: 'Pool afternoon at Pantai Cenang' },
     ],
     video: { title: 'Langkawi SkyCab Sky Bridge Malaysia experience 2024' },
     stay: 'Pantai Cenang',
@@ -517,8 +521,8 @@ export const DAYS = [
     tagline: 'Paddle channels, eagle feeding, bat cave boat tour',
     cover: W.kilim,
     images: [
-      { src: W.kilim,        caption: 'Kilim Geoforest Park mangroves — Langkawi Malaysia' },
-      { src: W.kilim,        caption: 'Kayak through the mangrove channels' },
+      { src: W.kilim, caption: 'Kilim Geoforest Park mangroves — Langkawi Malaysia' },
+      { src: W.kilim, caption: 'Kayak through the mangrove channels' },
       { src: W.pantaiCenang, caption: 'Limestone cliffs & eagle feeding' },
       { src: W.pantaiCenang, caption: 'Floating fish farm lunch' },
     ],
@@ -545,7 +549,7 @@ export const DAYS = [
       { src: W.pantaiCenang, caption: 'Jet ski on the Langkawi waters' },
       { src: W.pantaiCenang, caption: 'Island hopping — Pregnant Maiden Lake' },
       { src: W.pantaiCenang, caption: 'Sea-view infinity pool' },
-      { src: W.kilim,        caption: 'Last sunset in Langkawi' },
+      { src: W.kilim, caption: 'Last sunset in Langkawi' },
     ],
     video: { title: 'Langkawi water activities jet ski island hopping Malaysia 2024' },
     stay: 'Splurge night OR guesthouse + pool pass',
@@ -566,10 +570,10 @@ export const DAYS = [
     tagline: 'Ferry north, bus into the cool highlands, BOH tea',
     cover: W.boh,
     images: [
-      { src: W.boh,         caption: 'BOH Tea Plantation — Cameron Highlands Malaysia' },
+      { src: W.boh, caption: 'BOH Tea Plantation — Cameron Highlands Malaysia' },
       { src: W.mossyForest, caption: 'Cameron Highlands cool green hills' },
-      { src: W.boh,         caption: 'Glass café overlooking the tea terraces' },
-      { src: W.pantaiCenang,caption: 'Last Langkawi morning' },
+      { src: W.boh, caption: 'Glass café overlooking the tea terraces' },
+      { src: W.pantaiCenang, caption: 'Last Langkawi morning' },
     ],
     video: { title: 'Cameron Highlands Malaysia travel guide BOH tea plantation' },
     stay: 'Tanah Rata guesthouse',
@@ -591,9 +595,9 @@ export const DAYS = [
     cover: W.mossyForest,
     images: [
       { src: W.mossyForest, caption: 'Mossy Forest — Gunung Brinchang, Cameron Highlands Malaysia' },
-      { src: W.boh,         caption: 'Strawberry farm pick-your-own' },
+      { src: W.boh, caption: 'Strawberry farm pick-your-own' },
       { src: W.mossyForest, caption: 'Cloud forest trail' },
-      { src: W.boh,         caption: 'Tanah Rata night market' },
+      { src: W.boh, caption: 'Tanah Rata night market' },
     ],
     video: { title: 'Mossy Forest Cameron Highlands Malaysia jeep tour 2024' },
     stay: 'Tanah Rata',
@@ -615,7 +619,7 @@ export const DAYS = [
     cover: W.klSkyline,
     images: [
       { src: W.klSkyline, caption: 'Kuala Lumpur skyline at night' },
-      { src: W.petronas,  caption: 'Last KL Petronas Towers views' },
+      { src: W.petronas, caption: 'Last KL Petronas Towers views' },
       { src: W.jalanAlor, caption: 'Final squad dinner — Jalan Alor' },
       { src: W.klSkyline, caption: 'Pack for tomorrow\'s flight' },
     ],
@@ -638,8 +642,8 @@ export const DAYS = [
     tagline: 'Early transfer to KLIA — selamat jalan',
     cover: W.petronas,
     images: [
-      { src: W.petronas,     caption: 'One last look at the Petronas Towers' },
-      { src: W.klSkyline,    caption: 'KL skyline farewell' },
+      { src: W.petronas, caption: 'One last look at the Petronas Towers' },
+      { src: W.klSkyline, caption: 'KL skyline farewell' },
       { src: W.pantaiCenang, caption: 'Memories from Langkawi' },
     ],
     video: null,
@@ -654,18 +658,18 @@ export const DAYS = [
 ];
 
 export const BOOKING_PRESETS = [
-  { id: 'b1',  day: 2,  label: 'Petronas Twin Towers',      estMin: 150, estMax: 160, url: 'https://eticket.petronastwintowers.com.my' },
-  { id: 'b2',  day: 3,  label: 'Awana SkyWay cable car',    estMin: 22,  estMax: 22,  url: 'https://www.rwgenting.com' },
-  { id: 'b3',  day: 3,  label: 'Genting SkyWorlds',         estMin: 168, estMax: 198, url: 'https://www.gentingskyworlds.com' },
-  { id: 'b4',  day: 4,  label: 'Bus KL → Penang',           estMin: 45,  estMax: 90,  url: 'https://www.easybook.com' },
-  { id: 'b5',  day: 5,  label: 'Penang Hill funicular',     estMin: 30,  estMax: 35,  url: 'https://www.penanghill.gov.my' },
-  { id: 'b6',  day: 6,  label: 'ESCAPE Penang',             estMin: 182, estMax: 190, url: 'https://escape.my/pg/buy-tickets' },
-  { id: 'b7',  day: 7,  label: 'Ferry Penang → Langkawi',   estMin: 70,  estMax: 90,  url: 'https://www.traveloka.com' },
-  { id: 'b8',  day: 8,  label: 'Langkawi SkyCab + SkyBridge', estMin: 97, estMax: 97, url: 'https://www.panoramalangkawi.com' },
-  { id: 'b9',  day: 9,  label: 'Kilim kayak + boat tour',   estMin: 160, estMax: 205, url: 'https://langkawigotours.com/mangrove-kayaking-tour-langkawi' },
-  { id: 'b10', day: 10, label: 'Jet ski tour',              estMin: 225, estMax: 300, url: 'https://langkawigotours.com/jet-ski-tour-langkawi' },
+  { id: 'b1', day: 2, label: 'Petronas Twin Towers', estMin: 150, estMax: 160, url: 'https://eticket.petronastwintowers.com.my' },
+  { id: 'b2', day: 3, label: 'Awana SkyWay cable car', estMin: 22, estMax: 22, url: 'https://www.rwgenting.com' },
+  { id: 'b3', day: 3, label: 'Genting SkyWorlds', estMin: 168, estMax: 198, url: 'https://www.gentingskyworlds.com' },
+  { id: 'b4', day: 4, label: 'Bus KL → Penang', estMin: 45, estMax: 90, url: 'https://www.easybook.com' },
+  { id: 'b5', day: 5, label: 'Penang Hill funicular', estMin: 30, estMax: 35, url: 'https://www.penanghill.gov.my' },
+  { id: 'b6', day: 6, label: 'ESCAPE Penang', estMin: 182, estMax: 190, url: 'https://escape.my/pg/buy-tickets' },
+  { id: 'b7', day: 7, label: 'Ferry Penang → Langkawi', estMin: 70, estMax: 90, url: 'https://www.traveloka.com' },
+  { id: 'b8', day: 8, label: 'Langkawi SkyCab + SkyBridge', estMin: 97, estMax: 97, url: 'https://www.panoramalangkawi.com' },
+  { id: 'b9', day: 9, label: 'Kilim kayak + boat tour', estMin: 160, estMax: 205, url: 'https://langkawigotours.com/mangrove-kayaking-tour-langkawi' },
+  { id: 'b10', day: 10, label: 'Jet ski tour', estMin: 225, estMax: 300, url: 'https://langkawigotours.com/jet-ski-tour-langkawi' },
   { id: 'b11', day: 11, label: 'Ferry Langkawi → Kuala Kedah', estMin: 35, estMax: 40, url: 'https://www.traveloka.com' },
-  { id: 'b12', day: 11, label: 'Bus → Cameron Highlands',   estMin: 35,  estMax: 45,  url: 'https://www.easybook.com' },
+  { id: 'b12', day: 11, label: 'Bus → Cameron Highlands', estMin: 35, estMax: 45, url: 'https://www.easybook.com' },
 ];
 
 export function getDayByNumber(n) {
