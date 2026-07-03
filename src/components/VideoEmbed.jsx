@@ -1,3 +1,10 @@
+/**
+ * VideoEmbed.jsx — YouTube search link button
+ * Props: video ({ title: string } | null)
+ * Does NOT embed an iframe. Generates a YouTube search URL from the video
+ * title so there are no broken embeds or GDPR issues. Opens in new tab.
+ * Returns null when video is null or title is missing.
+ */
 import { ExternalLink, Play } from 'lucide-react';
 
 export default function VideoEmbed({ video }) {

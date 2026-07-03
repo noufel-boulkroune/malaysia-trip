@@ -1,12 +1,29 @@
 import { calcDayCost } from '../data/tripData';
 
+const TRIP_START = new Date('2026-07-22T00:00:00');
+
+function getTripDay() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diff = Math.floor((today - TRIP_START) / 86_400_000);
+  return diff >= 0 && diff < 14 ? diff + 1 : null;
+}
+
+const TODAY_DAY = getTripDay();
+
 export default function DayCard({ day, optionValues, onClick }) {
-  const cost = calcDayCost(day, optionValues);
+  const cost    = calcDayCost(day, optionValues);
+  const isToday = day.day === TODAY_DAY;
+  const isPast  = TODAY_DAY !== null && day.day < TODAY_DAY;
 
   return (
     <button
       onClick={onClick}
-      className="group text-left w-full bg-surface-card border border-surface-border rounded-2xl overflow-hidden hover:border-brand-red/40 transition-colors duration-200"
+      className={`group text-left w-full bg-surface-card border rounded-2xl overflow-hidden transition-colors duration-200 ${
+        isToday
+          ? 'border-brand-gold shadow-[0_0_0_2px_rgba(245,200,66,0.3)]'
+          : 'border-surface-border hover:border-brand-red/40'
+      } ${isPast ? 'opacity-60' : ''}`}
     >
       <div className="relative h-44 overflow-hidden">
         <img
@@ -18,6 +35,16 @@ export default function DayCard({ day, optionValues, onClick }) {
         <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-brand-red text-white text-xs font-bold">
           DAY {day.day}
         </span>
+        {isToday && (
+          <span className="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-brand-gold text-black text-xs font-bold">
+            TODAY
+          </span>
+        )}
+        {isPast && (
+          <div className="absolute inset-0 bg-black/25 flex items-end justify-end p-3">
+            <span className="text-xs text-white/50 bg-black/40 px-2 py-0.5 rounded font-semibold">Done</span>
+          </div>
+        )}
       </div>
 
       <div className="p-4">

@@ -28,7 +28,7 @@ export const TRIP_META = {
   duration: '14 days / 13 nights',
   group: 'Male friends · Halal-only · Twin-share',
   transport: 'Bus, ferry, cable car & Grab — no internal flights',
-  rate: '1 € ≈ 5 MYR',
+  rate: '1 € ≈ 4.66 MYR',
   heroImage: fp('Petronas_Towers_at_Night_-_from_the_base_upwards.jpg'),
 };
 
@@ -73,15 +73,16 @@ export const OPTIONS = {
   },
 };
 
+// All amounts in MYR, per person (twin-share room cost ÷2)
 export const BUDGET = [
-  { category: 'Accommodation (13 nights)', range: '1,040–1,600', note: 'Budget twin-share rooms ÷2 pp · Mid-range = RM2,300+ (over budget)' },
-  { category: 'Transport', range: '350–420', note: 'Buses, ferries, cable cars, Grab' },
-  { category: 'Food & drink', range: '~650', note: '~50 MYR/day, hawker-heavy, halal-checked' },
-  { category: 'Activities & adventure', range: '900–1,000', note: 'Towers, Genting, ESCAPE, SkyCab, kayak, jet ski' },
-  { category: 'Souvenirs & duty-free', range: '~150', note: 'Optional' },
-  { category: 'Misc (SIM, laundry, tips)', range: '~100', note: 'MDAC is free' },
-  { category: 'CORE TOTAL', range: '3,140–3,770', note: '≈ 630–755 € · All per person, budget tier hotels', highlight: true },
-  { category: 'Suggested buffer', range: '~500', note: 'Upgrades, extras, bad-weather plan B' },
+  { category: 'Accommodation (13 nights)', min: 520, max: 800, note: 'Budget twin-share ÷2 pp · Mid-range = RM1,170+ pp (over budget)' },
+  { category: 'Transport', min: 350, max: 420, note: 'Buses, ferries, cable cars, Grab' },
+  { category: 'Food & drink', min: 600, max: 700, note: '~50 MYR/day, hawker-heavy, halal-checked' },
+  { category: 'Activities & adventure', min: 900, max: 1000, note: 'Towers, Genting, ESCAPE, SkyCab, kayak, jet ski' },
+  { category: 'Souvenirs & duty-free', min: 100, max: 200, note: 'Optional — Langkawi is duty-free' },
+  { category: 'Misc (SIM, laundry, tips)', min: 80, max: 120, note: 'MDAC is free; SIM ~RM40' },
+  { category: 'CORE TOTAL', min: 2550, max: 3240, note: '≈ 547–695 € per person (1€ = 4.66 MYR)', highlight: true },
+  { category: 'Suggested buffer', min: 400, max: 500, note: 'Upgrades, extras, bad-weather plan B' },
 ];
 
 export const BOOKINGS = [
@@ -285,13 +286,59 @@ export const TRANSPORT = [
 ];
 
 export const CHECKLIST = [
-  { text: 'Malaysia Digital Arrival Card (MDAC) — 3 days before landing', url: 'https://imigresen-online.imi.gov.my' },
-  { text: 'Download Grab + set up card or e-wallet' },
-  { text: 'Download prayer-times app (Muslim Pro)' },
-  { text: 'Save this guide offline — patchy signal at Kilim & Mossy Forest' },
-  { text: 'Notify bank; extra cash for Cameron Highlands ATMs' },
-  { text: 'Pack: rain jacket, hoodie (~15°C Cameron), dry-bag, smart-casual for Petronas' },
-  { text: 'Travel insurance covering jet ski & kayak' },
+  { id: 'mdac', text: 'Malaysia Digital Arrival Card (MDAC) — fill online 3 days before landing', url: 'https://imigresen-online.imi.gov.my' },
+  { id: 'grab', text: 'Download Grab app + set up payment card or e-wallet' },
+  { id: 'prayer', text: 'Download Muslim Pro (prayer times + halal map)' },
+  { id: 'offline', text: 'Download offline maps for KL, Penang, Langkawi, Cameron Highlands' },
+  { id: 'bank', text: 'Notify your bank of travel dates; withdraw extra cash for Cameron ATMs' },
+  { id: 'petronas', text: 'Book Petronas Towers tickets online (sells out fast)', url: 'https://eticket.petronastwintowers.com.my' },
+  { id: 'insurance', text: 'Travel insurance that covers jet ski + water activities' },
+  { id: 'hotels', text: 'Book all hotels at least 2–3 weeks ahead (July = peak season)' },
+  { id: 'simcard', text: 'Buy local SIM at KLIA airport (Celcom or Maxis, RM30–50 for 15GB)' },
+];
+
+export const PACKING = [
+  {
+    category: 'Documents',
+    items: [
+      { id: 'pk-passport', text: 'Passport — valid for 6+ months from 4 Aug 2026' },
+      { id: 'pk-insurance', text: 'Travel insurance document (printed or offline)' },
+      { id: 'pk-bookings', text: 'Hotel + activity confirmations (offline screenshots)' },
+      { id: 'pk-emergency', text: 'Emergency contacts + embassy number written down' },
+      { id: 'pk-cash', text: 'Some MYR cash ready (exchange at airport or Wise card)' },
+    ],
+  },
+  {
+    category: 'Clothes',
+    items: [
+      { id: 'pk-shirts', text: 'Lightweight shirts × 5 (quick-dry)' },
+      { id: 'pk-shorts', text: 'Shorts × 3' },
+      { id: 'pk-pants', text: 'Long pants × 1 (required for mosque/Petronas Tower)' },
+      { id: 'pk-swim', text: 'Swimwear × 2 (Langkawi beach days)' },
+      { id: 'pk-shoes', text: 'Flip flops + trainers (two pairs)' },
+      { id: 'pk-jacket', text: 'Rain jacket — monsoon season + Cameron Highlands (15°C nights)' },
+      { id: 'pk-warm', text: 'Hoodie or fleece for Cameron Highlands evenings' },
+    ],
+  },
+  {
+    category: 'Toiletries & Health',
+    items: [
+      { id: 'pk-sunscreen', text: 'Sunscreen SPF50+ — beach days are brutal' },
+      { id: 'pk-repellent', text: 'Insect repellent — Kilim mangroves + Mossy Forest' },
+      { id: 'pk-drybag', text: 'Dry bag / waterproof pouch (jet ski + kayak)' },
+      { id: 'pk-firstaid', text: 'Basic first aid kit (plasters, paracetamol, antidiarrhoeals)' },
+      { id: 'pk-sanitiser', text: 'Hand sanitiser' },
+    ],
+  },
+  {
+    category: 'Tech',
+    items: [
+      { id: 'pk-adapter', text: 'Universal travel adapter (Malaysia uses UK 3-pin)' },
+      { id: 'pk-powerbank', text: 'Power bank — long day trips with no charging' },
+      { id: 'pk-earphones', text: 'Earphones' },
+      { id: 'pk-camera', text: 'Camera / GoPro for jet ski + SkyCab views' },
+    ],
+  },
 ];
 
 export const HALAL = [

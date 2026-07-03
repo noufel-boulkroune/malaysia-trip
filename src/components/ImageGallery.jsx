@@ -1,3 +1,11 @@
+/**
+ * ImageGallery.jsx — Photo carousel with lightbox
+ * Props: images [{src, caption}], className (optional)
+ * - Arrows always visible on mobile (sm: reverts to hover-only on desktop)
+ * - Thumbnail strip below carousel for direct image selection
+ * - Lightbox: fixed z-300 overlay, click outside to close
+ * - Returns null if images is empty or missing
+ */
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, X, Expand } from 'lucide-react';
 
@@ -32,10 +40,10 @@ export default function ImageGallery({ images, className = '' }) {
           </button>
           {images.length > 1 && (
             <>
-              <button onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
                 <ChevronLeft size={18} />
               </button>
-              <button onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
                 <ChevronRight size={18} />
               </button>
             </>

@@ -1,13 +1,28 @@
+/**
+ * Navbar.jsx — Fixed top navigation bar
+ *
+ * Props: activeDay (null|number), onCloseDay () => void
+ *
+ * Behaviour
+ * ---------
+ * - When activeDay is null: shows nav LINKS (scrolls to section on click)
+ * - When activeDay is set: shows a "Back" chevron that calls onCloseDay
+ * - Mobile: hamburger menu expands LINKS list below the bar
+ * - Clicking the logo always closes the day view and scrolls to top
+ *
+ * To add a nav link: append to the LINKS array. The href must match an
+ * id= attribute on a section in App.jsx.
+ */
 import { useState } from 'react';
 import { Menu, X, ChevronLeft } from 'lucide-react';
 
 const LINKS = [
-  { href: '#days', label: 'Days' },
-  { href: '#route', label: 'Route' },
-  { href: '#options', label: 'Options' },
+  { href: '#days',     label: 'Days' },
+  { href: '#options',  label: 'Options' },
+  { href: '#budget',   label: 'Budget' },
   { href: '#bookings', label: 'Book' },
-  { href: '#budget', label: 'Budget' },
-  { href: '#prep', label: 'Prep' },
+  { href: '#hotels',   label: 'Hotels' },
+  { href: '#prep',     label: 'Prep' },
 ];
 
 export default function Navbar({ activeDay, onCloseDay }) {

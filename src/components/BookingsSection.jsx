@@ -1,14 +1,26 @@
+/**
+ * BookingsSection.jsx — Online booking cards with return-from-tab popup
+ *
+ * localStorage: mt-bookings (via useBookings hook)
+ * sessionStorage: mt-pending-click (TTL: 30 min)
+ *
+ * Flow
+ * ----
+ * 1. User taps "Book now" → sessionStorage records {presetId, label, ts}
+ * 2. User leaves to external booking site
+ * 3. On tab focus / visibilitychange (within 30 min) → ReturnPopup fires
+ * 4. Step 1: "Did you book it?" → Step 2: "How much?" (pre-filled estimate)
+ * 5. Confirmed → saved to mt-bookings → syncs to MoneyTracker + HotelsSection
+ *
+ * Each card also has a circle checkbox (top-right) for direct toggle.
+ * Booked cards show green overlay, paid amount editor, "Open again" button.
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { ExternalLink, CheckCircle2, Circle, X, AlertCircle } from 'lucide-react';
 import { BOOKINGS, BOOKING_PRESETS } from '../data/tripData';
+import { useBookings } from '../hooks/useBookings';
 
-const STORAGE_KEY = 'mt-bookings';
 const PENDING_KEY = 'mt-pending-click';
-
-function loadBookings() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}'); } catch { return {}; }
-}
-function saveBookings(b) { localStorage.setItem(STORAGE_KEY, JSON.stringify(b)); }
 
 function ReturnPopup({ pending, onConfirm, onDismiss }) {
   const [amount, setAmount] = useState('');
@@ -97,10 +109,8 @@ function ReturnPopup({ pending, onConfirm, onDismiss }) {
 }
 
 export default function BookingsSection() {
-  const [bookings, setBookings] = useState(loadBookings);
-  const [pending, setPending]   = useState(null);
-
-  useEffect(() => { saveBookings(bookings); }, [bookings]);
+  const [bookings, updateBookings] = useBookings();
+  const [pending, setPending]      = useState(null);
 
   const checkPending = useCallback(() => {
     const raw = sessionStorage.getItem(PENDING_KEY);
@@ -133,14 +143,14 @@ export default function BookingsSection() {
   }
 
   function confirmBooking(presetId, amount) {
-    setBookings(prev => ({ ...prev, [presetId]: { booked: true, paid: amount } }));
+    updateBookings(prev => ({ ...prev, [presetId]: { booked: true, paid: amount } }));
     setPending(null);
   }
 
   function toggleBooked(item) {
     if (!item.presetId) return;
     const preset = BOOKING_PRESETS.find(p => p.id === item.presetId);
-    setBookings(prev => {
+    updateBookings(prev => {
       const cur = prev[item.presetId];
       if (cur?.booked) {
         const next = { ...prev };
@@ -153,7 +163,7 @@ export default function BookingsSection() {
 
   function updatePaid(presetId, val) {
     const num = parseFloat(val);
-    setBookings(prev => ({ ...prev, [presetId]: { ...prev[presetId], paid: isNaN(num) ? 0 : num } }));
+    updateBookings(prev => ({ ...prev, [presetId]: { ...prev[presetId], paid: isNaN(num) ? 0 : num } }));
   }
 
   const bookedCount = Object.values(bookings).filter(b => b.booked).length;

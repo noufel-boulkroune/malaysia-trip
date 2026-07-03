@@ -1,13 +1,23 @@
+/**
+ * DayDetail.jsx — Full-screen day overlay
+ * Props: day, optionValues, onClose, onPrev, onNext, hasPrev, hasNext
+ * Renders as a fixed inset overlay (z-200). Uses useRef to scroll the
+ * container back to top on day change (window.scrollTo doesn't work on
+ * fixed overflow-y-auto containers).
+ * Contains: image gallery, video link, step timeline, prev/next nav.
+ */
 import { useRef, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Bed, Wallet, ChevronLeft } from 'lucide-react';
 import ImageGallery from './ImageGallery';
 import VideoEmbed from './VideoEmbed';
 import StepTimeline from './StepTimeline';
 import { calcDayCost } from '../data/tripData';
+import { useStepExpenses } from '../hooks/useStepExpenses';
 
 export default function DayDetail({ day, optionValues, onClose, onPrev, onNext, hasPrev, hasNext }) {
   const cost = calcDayCost(day, optionValues);
   const scrollRef = useRef(null);
+  const { stepExpenses, logStep, removeStep } = useStepExpenses();
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -85,7 +95,13 @@ export default function DayDetail({ day, optionValues, onClose, onPrev, onNext, 
           </section>
         )}
 
-        <StepTimeline steps={day.steps} />
+        <StepTimeline
+          steps={day.steps}
+          dayNum={day.day}
+          stepExpenses={stepExpenses}
+          onLogStep={logStep}
+          onRemoveStep={removeStep}
+        />
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 bg-surface-bg border-t border-surface-border px-4 py-3 flex justify-between items-center z-[201]">

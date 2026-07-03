@@ -1,13 +1,22 @@
-import { useState, useEffect } from 'react';
+/**
+ * HotelsSection.jsx — Hotel options per city with booking tracker
+ *
+ * localStorage: mt-bookings (via useBookings hook)
+ *
+ * Displays 4 cities (KL, Penang, Langkawi, Cameron) as collapsible blocks.
+ * Each city has 3 hotel options (Budget / Mid-range / Splurge).
+ * Selecting a hotel auto-unbookmarks sibling options in the same city.
+ *
+ * Budget bar: tracks total hotel spend vs HOTEL_BUDGET_MAX (RM 1,600).
+ * Hotel paid amounts default to (estMin + estMax) / 2 × nightCount.
+ * EUR_RATE = 4.66 — all prices shown in MYR + EUR.
+ *
+ * Hotel presetId format: 'h-{city}-{tier}' e.g. 'h-kl-budget'
+ */
+import { useState } from 'react';
 import { Bed, ExternalLink, MapPin, ChevronDown, ChevronUp, CheckCircle2, Circle, AlertTriangle } from 'lucide-react';
 import { HOTELS, HOTEL_BUDGET_MAX } from '../data/tripData';
-
-const STORAGE_KEY = 'mt-bookings';
-
-function loadBookings() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}'); } catch { return {}; }
-}
-function saveBookings(b) { localStorage.setItem(STORAGE_KEY, JSON.stringify(b)); }
+import { useBookings } from '../hooks/useBookings';
 
 const TIER_STYLE = {
   Budget:      { badge: 'bg-white/10 text-white/60 border-white/10', border: 'border-surface-border', dot: 'bg-white/30' },
@@ -184,46 +193,30 @@ function CityBlock({ city, bookings, onToggle, onUpdatePaid }) {
 }
 
 export default function HotelsSection() {
-  const [bookings, setBookings] = useState(loadBookings);
-
-  useEffect(() => {
-    const onStorage = () => setBookings(loadBookings());
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, []);
+  const [bookings, updateBookings] = useBookings();
 
   function toggleHotel(hotel, nightCount) {
-    setBookings(prev => {
-      const cur = prev[hotel.presetId];
-      let next;
-      if (cur?.booked) {
-        next = { ...prev };
+    updateBookings(prev => {
+      if (prev[hotel.presetId]?.booked) {
+        const next = { ...prev };
         delete next[hotel.presetId];
-      } else {
-        // Unbook any other option for same city
-        const siblings = HOTELS.flatMap(c => c.options).filter(h =>
-          h.presetId !== hotel.presetId &&
-          HOTELS.find(c => c.options.includes(hotel) && c.options.includes(h))
-        );
-        next = { ...prev };
-        siblings.forEach(s => { if (next[s.presetId]?.booked) delete next[s.presetId]; });
-        next[hotel.presetId] = {
-          booked: true,
-          paid: Math.round((hotel.estMin + hotel.estMax) / 2) * nightCount,
-        };
+        return next;
       }
-      saveBookings(next);
+      // Find city that contains this hotel and unbook any sibling options
+      const city = HOTELS.find(c => c.options.some(h => h.presetId === hotel.presetId));
+      const next = { ...prev };
+      city?.options.forEach(h => { if (h.presetId !== hotel.presetId) delete next[h.presetId]; });
+      next[hotel.presetId] = {
+        booked: true,
+        paid: Math.round((hotel.estMin + hotel.estMax) / 2) * nightCount,
+      };
       return next;
     });
   }
 
   function updatePaid(presetId, val) {
     const num = parseFloat(val);
-    setBookings(prev => {
-      const next = { ...prev, [presetId]: { ...prev[presetId], paid: isNaN(num) ? 0 : num } };
-      saveBookings(next);
-      return next;
-    });
+    updateBookings(prev => ({ ...prev, [presetId]: { ...prev[presetId], paid: isNaN(num) ? 0 : num } }));
   }
 
   // Compute total hotel spend from booked hotel presetIds

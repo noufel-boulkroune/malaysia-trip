@@ -1,3 +1,9 @@
+/**
+ * DaysSection.jsx — Day card grid with city filter
+ * Props: optionValues (from useTripOptions), onOpenDay (day number → void)
+ * Derives city filter list from DAYS data. Passes optionValues to DayCard
+ * so cost ranges update live when options change.
+ */
 import { useState, useMemo } from 'react';
 import { DAYS } from '../data/tripData';
 import DayCard from './DayCard';

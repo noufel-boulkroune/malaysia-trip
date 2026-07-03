@@ -1,3 +1,7 @@
+/**
+ * RouteSection.jsx — Horizontal scrollable city route overview
+ * No props. Pure display — reads CITIES array from tripData.js.
+ */
 import { CITIES } from '../data/tripData';
 
 const CITY_BORDER = [

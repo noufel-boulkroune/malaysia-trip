@@ -1,3 +1,10 @@
+/**
+ * OptionsPanel.jsx — Trip option selector UI
+ * Props: values, setOption, extraCost, reset (all from useTripOptions hook)
+ * Renders one radio group per key in OPTIONS (tripData.js).
+ * Choices affect day cost estimates and the BudgetSection total via extraCost.
+ * To add a new option: add it to OPTIONS in tripData.js — no changes needed here.
+ */
 import { RotateCcw, ExternalLink } from 'lucide-react';
 import { OPTIONS } from '../data/tripData';
 
