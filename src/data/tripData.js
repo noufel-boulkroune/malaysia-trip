@@ -41,12 +41,13 @@ export const CITIES = [
 export const OPTIONS = {
   gentingAddon: {
     id: 'gentingAddon',
-    label: 'Genting add-on (Day 3)',
+    label: 'Day 3 theme park pick',
     day: 3,
     choices: [
-      { id: 'none', label: 'Free explore only', cost: 0, desc: 'Cable car + Chin Swee Temple + viewpoints' },
-      { id: 'skytropolis', label: 'Skytropolis indoor park', cost: 80, desc: 'RM70–90 · Good if raining', book: 'https://www.klook.com' },
-      { id: 'skyworlds', label: 'Genting SkyWorlds outdoor', cost: 168, desc: 'RM168 online · Big theme park', book: 'https://www.gentingskyworlds.com' },
+      { id: 'none', label: 'Genting — free explore only', cost: 0, desc: 'Cable car + Chin Swee Temple + viewpoints' },
+      { id: 'skytropolis', label: 'Genting + Skytropolis indoor', cost: 80, desc: 'RM70–90 · Good if raining', book: 'https://www.klook.com' },
+      { id: 'skyworlds', label: 'Genting + SkyWorlds outdoor', cost: 168, desc: 'RM168 online · Big theme park at the Genting peak', book: 'https://www.gentingskyworlds.com' },
+      { id: 'sunwayLagoon', label: 'SWAP → Sunway Lagoon (skip Genting)', cost: 280, desc: 'RM263 all-park foreigner + Grab · 6 zones: water, amusement, wildlife, extreme, scream, lost lagoon · Full day, replaces Genting entirely', book: 'https://sunwaylagoon.com/etickets/' },
     ],
   },
   langkawiActivity: {
@@ -86,6 +87,7 @@ export const BUDGET = [
 export const BOOKINGS = [
   { item: 'Petronas Twin Towers', price: 'RM150–160 pp', source: 'petronastwintowers.com.my', url: 'https://eticket.petronastwintowers.com.my', image: W.petronas, presetId: 'b1' },
   { item: 'Genting SkyWorlds', price: 'RM168 online', source: 'gentingskyworlds.com', url: 'https://www.gentingskyworlds.com', image: W.genting, presetId: 'b3' },
+  { item: 'Sunway Lagoon (Day 3 swap)', price: 'RM263 all-park', source: 'sunwaylagoon.com', url: 'https://sunwaylagoon.com/etickets/', image: W.klSkyline, presetId: 'b14' },
   { item: 'Awana SkyWay cable car', price: 'RM22 return', source: 'rwgenting.com', url: 'https://www.rwgenting.com', image: W.genting, presetId: 'b2' },
   { item: 'Bus KL → Penang', price: 'RM45–90 pp', source: 'easybook.com', url: 'https://www.easybook.com', image: W.georgeTown, presetId: 'b4' },
   { item: 'Penang Hill funicular', price: 'RM30–35 pp', source: 'penanghill.gov.my', url: 'https://www.penanghill.gov.my', image: W.georgeTown, presetId: 'b5' },
@@ -374,8 +376,8 @@ export const DAYS = [
     day: 3,
     date: 'Fri 24 Jul',
     city: 'Kuala Lumpur',
-    theme: 'Genting Highlands',
-    tagline: 'Cable car, Chin Swee Temple, optional theme parks',
+    theme: 'Genting Highlands (or Sunway Lagoon swap)',
+    tagline: 'Cable car, Chin Swee Temple, optional theme parks — or swap the whole day for Sunway Lagoon',
     cover: W.genting,
     images: [
       { src: W.genting, caption: 'Awana SkyWay over rainforest — Malaysia' },
@@ -393,7 +395,7 @@ export const DAYS = [
       { time: '11:00', title: 'Chin Swee Temple', desc: 'Dramatic cliffside temple with panoramic views. Worth 30–45 min.', images: [W.mossyForest], mapsUrl: 'https://maps.google.com/?q=Chin+Swee+Caves+Temple+Genting+Malaysia' },
       { time: '12:00', title: 'Lunch SkyAvenue', desc: 'Peak mall — halal food court & restaurants.', cost: 'RM20–30 pp', halal: true },
       { time: '13:30', title: 'Explore the peak', desc: 'SkyAvenue, casino atrium exterior, First World Plaza viewpoints. Free to wander.', images: [W.genting] },
-      { time: '14:30', title: 'Optional theme park', desc: 'Pick ONE in Options panel: Skytropolis (indoor) or SkyWorlds (outdoor RM168).', optional: true },
+      { time: '14:30', title: 'Optional theme park', desc: 'Pick in Options panel: Skytropolis (indoor RM80) · SkyWorlds (outdoor RM168) · or SWAP the whole day for Sunway Lagoon in Bandar Sunway (6 zones, RM263, full-day water/amusement/wildlife park — deeper experience than SkyWorlds).', optional: true },
       { time: '18:00', title: 'Bus back to KL Sentral', desc: '~1 hour descent.' },
       { time: '20:00', title: 'Dinner Bukit Bintang', cost: 'RM25–35 pp' },
     ],
@@ -672,6 +674,7 @@ export const BOOKING_PRESETS = [
   { id: 'b11', day: 11, label: 'Ferry Langkawi → Kuala Kedah', estMin: 35, estMax: 40, url: 'https://www.traveloka.com' },
   { id: 'b12', day: 11, label: 'ETS Train Alor Setar → KL Sentral', estMin: 50, estMax: 79, url: 'https://online.ktmb.com.my' },
   { id: 'b13', day: 13, label: 'Zoo Negara (Giant Pandas)', estMin: 88, estMax: 88, url: 'https://ticket.zoonegara.my' },
+  { id: 'b14', day: 3, label: 'Sunway Lagoon (Day 3 swap)', estMin: 263, estMax: 268, url: 'https://sunwaylagoon.com/etickets/' },
 ];
 
 export function getDayByNumber(n) {
