@@ -1,13 +1,4 @@
-import { calcDayCost } from '../data/tripData';
-
-const TRIP_START = new Date('2026-07-22T00:00:00');
-
-function getTripDay() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const diff = Math.floor((today - TRIP_START) / 86_400_000);
-  return diff >= 0 && diff < 14 ? diff + 1 : null;
-}
+import { calcDayCost, getTripDay } from '../data/tripData';
 
 const TODAY_DAY = getTripDay();
 

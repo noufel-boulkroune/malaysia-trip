@@ -17,12 +17,13 @@ import { useState } from 'react';
 import { Menu, X, ChevronLeft } from 'lucide-react';
 
 const LINKS = [
-  { href: '#days',     label: 'Days' },
-  { href: '#options',  label: 'Options' },
-  { href: '#budget',   label: 'Budget' },
+  { href: '#days', label: 'Days' },
+  { href: '#options', label: 'Options' },
+  { href: '#budget', label: 'Budget' },
+  { href: '#spend', label: 'Spend' },
   { href: '#bookings', label: 'Book' },
-  { href: '#hotels',   label: 'Hotels' },
-  { href: '#prep',     label: 'Prep' },
+  { href: '#hotels', label: 'Hotels' },
+  { href: '#prep', label: 'Prep' },
 ];
 
 export default function Navbar({ activeDay, onCloseDay }) {

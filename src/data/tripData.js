@@ -374,7 +374,6 @@ export const DAYS = [
     ],
     video: { title: 'Kuala Lumpur travel guide 2024' },
     stay: 'Bukit Bintang guesthouse (twin-share)',
-    costBase: { min: 100, max: 120 },
     steps: [
       { time: '14:15', title: 'Land at KLIA', desc: 'Immigration, baggage, scan MDAC QR. Get Celcom/Digi/Maxis SIM (~RM30–40).' },
       { time: '15:15', title: 'Grab XL → Bukit Bintang', desc: '45–60 min. Split Grab XL between the squad — cheaper & stay together.', cost: 'RM70–110 total', tip: 'Request ride inside arrivals for better GPS pin' },
@@ -398,7 +397,6 @@ export const DAYS = [
     ],
     video: { title: 'Batu Caves and Petronas Towers Kuala Lumpur Malaysia' },
     stay: 'Bukit Bintang',
-    costBase: { min: 215, max: 255 },
     steps: [
       { time: '08:00', title: 'Roti canai breakfast', desc: 'Local kopitiam — roti canai & teh tarik.', cost: 'RM10–15 pp' },
       { time: '09:30', title: 'Batu Caves Malaysia', desc: 'Grab return ~25 min each way. Free entry, 272 rainbow steps, giant golden Murugan statue. Dress modestly — sarongs free at entrance.', cost: 'RM15–20 pp Grab', images: [W.batuCaves], tip: 'Go early to beat heat & crowds', mapsUrl: 'https://maps.google.com/?q=Batu+Caves+Kuala+Lumpur+Malaysia' },
@@ -423,7 +421,6 @@ export const DAYS = [
     ],
     video: { title: 'Genting Highlands Awana SkyWay Malaysia 2024' },
     stay: 'Bukit Bintang (last KL night)',
-    costBase: { min: 65, max: 95 },
     hasOptions: ['gentingAddon'],
     steps: [
       { time: '08:00', title: 'KL Sentral — buy Go Genting return', desc: 'Level 2 or basement bus terminal. Buy bus + cable car combo if available.', book: 'https://www.redbus.my', mapsUrl: 'https://maps.google.com/?q=KL+Sentral+Kuala+Lumpur' },
@@ -452,7 +449,6 @@ export const DAYS = [
     ],
     video: { title: 'George Town Penang Malaysia travel guide 2024' },
     stay: 'George Town — Chulia St / Love Lane',
-    costBase: { min: 100, max: 150 },
     steps: [
       { time: '08:30', title: 'Check out & breakfast', desc: 'Pack. Store bags at guesthouse if needed.' },
       { time: '09:30', title: 'Merdeka Square (optional)', desc: '20 min photo stop if you have time.', images: [W.klSkyline] },
@@ -477,7 +473,6 @@ export const DAYS = [
     ],
     video: { title: 'Penang street art walk George Town Malaysia' },
     stay: 'George Town',
-    costBase: { min: 70, max: 90 },
     steps: [
       { time: '09:00', title: 'Street art self-guided walk', desc: 'Armenian St, Cannon St, Muntri St — hunt murals at easy pace, 2–3h.', images: [W.penangArt, W.georgeTown], mapsUrl: 'https://maps.google.com/?q=Armenian+Street+George+Town+Penang' },
       { time: '12:00', title: 'Line Clear Nasi Kandar', desc: 'Halal institution, open 24/7.', cost: 'RM15–20 pp', halal: true, mapsUrl: 'https://maps.google.com/?q=Line+Clear+Nasi+Kandar+Penang' },
@@ -501,7 +496,6 @@ export const DAYS = [
     ],
     video: { title: 'ESCAPE Penang adventure water park Malaysia review 2024' },
     stay: 'George Town',
-    costBase: { min: 200, max: 220 },
     steps: [
       { time: '07:30', title: 'Grab → Penang National Park HQ', desc: 'Teluk Bahang, ~45 min from George Town.', cost: 'RM10–15 pp', mapsUrl: 'https://maps.google.com/?q=Penang+National+Park+Teluk+Bahang+Malaysia' },
       { time: '08:30', title: 'Boat to Monkey Beach', desc: 'RM100 return per boat (8–10 pax). Macaques, swim, optional lighthouse hike. 2.5–3h total.', cost: 'RM12–25 pp', images: [W.monkeyBeach], tip: 'Don\'t leave bags unattended — monkeys steal phones', mapsUrl: 'https://maps.google.com/?q=Monkey+Beach+Penang+Malaysia' },
@@ -527,7 +521,6 @@ export const DAYS = [
     ],
     video: { title: 'Langkawi Malaysia island guide 2024' },
     stay: 'Pantai Cenang guesthouse',
-    costBase: { min: 170, max: 200 },
     steps: [
       { time: '06:30', title: 'Grab → Swettenham Pier', cost: 'RM10–15 pp', mapsUrl: 'https://maps.google.com/?q=Swettenham+Pier+Penang+Malaysia' },
       { time: '07:30', title: 'Ferry to Langkawi', desc: 'Scenic ~2.5h crossing. Peak season — book 1–2 days ahead.', cost: 'RM70–90 pp', book: 'https://www.traveloka.com', images: [W.pantaiCenang] },
@@ -552,7 +545,6 @@ export const DAYS = [
     ],
     video: { title: 'Langkawi SkyCab Sky Bridge Malaysia experience 2024' },
     stay: 'Pantai Cenang',
-    costBase: { min: 140, max: 150 },
     steps: [
       { time: '08:30', title: 'Drive to Oriental Village', desc: 'Burau Bay, ~20 min. Go early — beat tour buses.', images: [W.orientalVillage], mapsUrl: 'https://maps.google.com/?q=Oriental+Village+Langkawi+Malaysia' },
       { time: '09:30', title: 'SkyCab + SkyGlide + SkyBridge', desc: 'RM97 adult foreigner — all three included. Open 9:30am–6pm.', cost: 'RM97 pp', book: 'https://www.panoramalangkawi.com', images: [W.skyCab, W.orientalVillage] },
@@ -575,7 +567,6 @@ export const DAYS = [
     ],
     video: { title: 'Kilim Geoforest Park mangrove kayak Langkawi Malaysia' },
     stay: 'Pantai Cenang',
-    costBase: { min: 185, max: 265 },
     steps: [
       { time: '08:00', title: 'Drive to Kilim Jetty', desc: '~30 min from Pantai Cenang.', mapsUrl: 'https://maps.google.com/?q=Kilim+Jetty+Langkawi+Malaysia' },
       { time: '08:30', title: 'Mangrove kayak', desc: 'RM160–250 per kayak (1–2 pax). Paddle calm channels at your pace.', cost: 'RM80–125 pp', book: 'https://langkawigotours.com/mangrove-kayaking-tour-langkawi', images: [W.kilim] },
@@ -600,7 +591,6 @@ export const DAYS = [
     ],
     video: { title: 'Langkawi water activities jet ski island hopping Malaysia 2024' },
     stay: 'Splurge night OR guesthouse + pool pass',
-    costBase: { min: 150, max: 265 },
     hasOptions: ['langkawiActivity', 'langkawiStay'],
     steps: [
       { time: '09:00', title: 'Morning water activity', desc: 'Choose in Options: island hopping OR jet ski OR both.', optional: true, images: [W.pantaiCenang] },
@@ -624,7 +614,6 @@ export const DAYS = [
     ],
     video: { title: 'Cameron Highlands Malaysia travel guide BOH tea plantation' },
     stay: 'Tanah Rata guesthouse',
-    costBase: { min: 130, max: 180 },
     steps: [
       { time: '07:00', title: 'Return scooter, ferry Kuala Kedah', cost: 'RM35–40 pp' },
       { time: '09:30', title: 'Bus → Cameron Highlands', desc: 'Via Tapah, sometimes Ipoh. ~4h.', cost: 'RM35–45 pp', book: 'https://www.easybook.com' },
@@ -648,7 +637,6 @@ export const DAYS = [
     ],
     video: { title: 'Mossy Forest Cameron Highlands Malaysia jeep tour 2024' },
     stay: 'Tanah Rata',
-    costBase: { min: 80, max: 100 },
     steps: [
       { time: '08:00', title: 'Mossy Forest 4x4 jeep tour', desc: 'Book via guesthouse night before. Cloud forest, strawberry farm, viewpoint.', cost: 'RM40–50 pp', images: [W.mossyForest], mapsUrl: 'https://maps.google.com/?q=Gunung+Brinchang+Cameron+Highlands+Malaysia' },
       { time: '12:00', title: 'Lunch Tanah Rata', cost: 'RM15–20 pp' },
@@ -672,7 +660,6 @@ export const DAYS = [
     ],
     video: { title: 'Kuala Lumpur Malaysia final night Bukit Bintang shopping' },
     stay: 'Bukit Bintang — rest night',
-    costBase: { min: 135, max: 180 },
     steps: [
       { time: '09:00', title: 'Bus Cameron → KL', desc: 'Via Tapah ~4h.', cost: 'RM35–45 pp', book: 'https://www.easybook.com' },
       { time: '14:00', title: 'Check in Bukit Bintang', cost: 'RM70–100 pp/night' },
@@ -695,7 +682,6 @@ export const DAYS = [
     ],
     video: null,
     stay: '—',
-    costBase: { min: 20, max: 35 },
     steps: [
       { time: 'Early', title: 'Breakfast & document check', desc: 'Passport, boarding passes, MDAC copy.' },
       { time: '06:00', title: 'Transfer to KLIA', desc: 'KLIA Transit (budget) or Grab with duty-free bags.', cost: 'RM20–35 pp' },
@@ -723,9 +709,29 @@ export function getDayByNumber(n) {
   return DAYS.find((d) => d.day === n);
 }
 
+// Parses a step's free-text `cost` field (e.g. "RM70–110 total", "RM25–35 pp")
+// into a numeric range. This is the single source of truth for day costs so
+// the displayed budget can never drift from the per-step costs shown to the user.
+function parseCostRange(str) {
+  if (!str) return { min: 0, max: 0 };
+  const m = str.match(/(\d+(?:\.\d+)?)\s*(?:[–-]\s*(\d+(?:\.\d+)?))?/);
+  if (!m) return { min: 0, max: 0 };
+  const min = parseFloat(m[1]);
+  const max = m[2] !== undefined ? parseFloat(m[2]) : min;
+  return { min, max };
+}
+
+export function calcDayStepsCost(day) {
+  return day.steps.reduce((acc, step) => {
+    const { min, max } = parseCostRange(step.cost);
+    return { min: acc.min + min, max: acc.max + max };
+  }, { min: 0, max: 0 });
+}
+
 export function calcDayCost(day, optionValues) {
-  let min = day.costBase.min;
-  let max = day.costBase.max;
+  const stepsCost = calcDayStepsCost(day);
+  let min = stepsCost.min;
+  let max = stepsCost.max;
   if (day.hasOptions) {
     day.hasOptions.forEach((optKey) => {
       const opt = OPTIONS[optKey];
@@ -737,4 +743,22 @@ export function calcDayCost(day, optionValues) {
     });
   }
   return { min: Math.round(min), max: Math.round(max) };
+}
+
+// Trip starts 22 Jul 2026 — the single source of truth for "which day is today"
+// used to know which days have passed and warn on overspending pace.
+const TRIP_START = new Date('2026-07-22T00:00:00');
+
+export function getTripDay() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diff = Math.floor((today - TRIP_START) / 86_400_000);
+  return diff >= 0 && diff < DAYS.length ? diff + 1 : null;
+}
+
+export function calcTripCostRange(optionValues) {
+  return DAYS.reduce((acc, day) => {
+    const { min, max } = calcDayCost(day, optionValues);
+    return { min: acc.min + min, max: acc.max + max };
+  }, { min: 0, max: 0 });
 }

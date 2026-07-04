@@ -21,6 +21,7 @@ import DaysSection from './components/DaysSection';
 import DayDetail from './components/DayDetail';
 import OptionsPanel from './components/OptionsPanel';
 import BudgetSection from './components/BudgetSection';
+import SpendSection from './components/SpendSection';
 import BookingsSection from './components/BookingsSection';
 import HotelsSection from './components/HotelsSection';
 import PrepSection from './components/PrepSection';
@@ -64,6 +65,7 @@ export default function App() {
           <DaysSection optionValues={values} onOpenDay={openDay} />
           <OptionsPanel values={values} setOption={setOption} extraCost={extraCost} reset={reset} />
           <BudgetSection extraCost={extraCost} />
+          <SpendSection />
           <BookingsSection />
           <HotelsSection />
           <PrepSection />
