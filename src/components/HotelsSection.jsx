@@ -3,7 +3,7 @@
  *
  * localStorage: mt-bookings (via useBookings hook)
  *
- * Displays 4 cities (KL, Penang, Langkawi, Cameron) as collapsible blocks.
+ * Displays 3 cities (KL, Penang, Langkawi) as collapsible blocks.
  * Each city has 3 hotel options (Budget / Mid-range / Splurge).
  * Selecting a hotel auto-unbookmarks sibling options in the same city.
  *
