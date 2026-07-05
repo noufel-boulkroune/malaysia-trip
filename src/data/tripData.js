@@ -75,12 +75,13 @@ export const OPTIONS = {
 // All amounts in MYR, per person (twin-share room cost ÷2)
 export const BUDGET = [
   { category: 'Accommodation (13 nights)', min: 550, max: 830, note: 'Budget twin-share ÷2 pp · 6 KL nights + 3 Penang + 4 Langkawi' },
-  { category: 'Transport', min: 320, max: 400, note: 'Buses, ferries, ETS train, cable car, Grab' },
+  { category: 'Transport', min: 345, max: 440, note: 'Buses, ferries, ETS train, cable car, Grab' },
   { category: 'Food & drink', min: 600, max: 700, note: '~50 MYR/day, hawker-heavy, halal-checked' },
+  { category: 'Snacks, drinks & extras', min: 140, max: 210, note: '~RM10–15/day — water, juice, street snacks, trying new things' },
   { category: 'Activities & adventure', min: 980, max: 1080, note: 'Towers, Genting, ESCAPE, SkyCab, kayak, jet ski, Zoo Negara, Broga Hill' },
   { category: 'Souvenirs & duty-free', min: 100, max: 200, note: 'Optional — Langkawi is duty-free' },
   { category: 'Misc (SIM, laundry, tips)', min: 80, max: 120, note: 'MDAC is free; SIM ~RM40' },
-  { category: 'CORE TOTAL', min: 2630, max: 3330, note: '≈ 564–715 € per person (1€ = 4.66 MYR)', highlight: true },
+  { category: 'CORE TOTAL', min: 2795, max: 3580, note: '≈ 600–768 € per person (1€ = 4.66 MYR)', highlight: true },
   { category: 'Suggested buffer', min: 400, max: 500, note: 'Upgrades, extras, bad-weather plan B' },
 ];
 
@@ -465,7 +466,7 @@ export const DAYS = [
     steps: [
       { time: '07:30', title: 'Grab → Penang National Park HQ', desc: 'Teluk Bahang, ~45 min from George Town.', cost: 'RM10–15 pp', mapsUrl: 'https://maps.google.com/?q=Penang+National+Park+Teluk+Bahang+Malaysia' },
       { time: '08:30', title: 'Boat to Monkey Beach', desc: 'RM100 return per boat (8–10 pax). Macaques, swim, optional lighthouse hike. 2.5–3h total.', cost: 'RM12–25 pp', images: [W.monkeyBeach], tip: 'Don\'t leave bags unattended — monkeys steal phones', mapsUrl: 'https://maps.google.com/?q=Monkey+Beach+Penang+Malaysia' },
-      { time: '11:30', title: 'Grab → ESCAPE Penang', desc: 'Same Teluk Bahang area, 5–10 min.' },
+      { time: '11:30', title: 'Grab → ESCAPE Penang', desc: 'Same Teluk Bahang area, 5–10 min.', cost: 'RM10–15 pp' },
       { time: '12:00', title: 'Lunch at ESCAPE café', cost: 'RM20–25 pp', halal: true },
       { time: '13:00', title: 'ESCAPE Penang — full day pass', desc: 'Ziplines, rope courses, world-record tube slide, Dead Sea pool. Bring swimwear. 4–5h.', cost: 'RM182–190 pp', book: 'https://escape.my/pg/buy-tickets', mapsUrl: 'https://maps.google.com/?q=ESCAPE+Penang+Teluk+Bahang+Malaysia' },
       { time: '18:30', title: 'Grab back to George Town', cost: 'RM15 pp' },
@@ -490,7 +491,7 @@ export const DAYS = [
     steps: [
       { time: '06:30', title: 'Grab → Swettenham Pier', cost: 'RM10–15 pp', mapsUrl: 'https://maps.google.com/?q=Swettenham+Pier+Penang+Malaysia' },
       { time: '07:30', title: 'Ferry to Langkawi', desc: 'Scenic ~2.5h crossing. Peak season — book 1–2 days ahead.', cost: 'RM70–90 pp', book: 'https://www.traveloka.com', images: [W.pantaiCenang] },
-      { time: '10:30', title: 'Kuah → Pantai Cenang', desc: 'Grab or shuttle ~40 min, check in.', mapsUrl: 'https://maps.google.com/?q=Pantai+Cenang+Langkawi+Malaysia' },
+      { time: '10:30', title: 'Kuah → Pantai Cenang', desc: 'Grab or shuttle ~40 min, check in.', cost: 'RM20–30 pp', mapsUrl: 'https://maps.google.com/?q=Pantai+Cenang+Langkawi+Malaysia' },
       { time: '12:30', title: 'Rent scooters or car', desc: 'Left-hand drive, easy roads. 2 per scooter or split car.', cost: 'RM40–50 pp/day', tip: 'Wear helmet; IDP technically required' },
       { time: '13:30', title: 'Lunch + Pantai Cenang swim', cost: 'RM20–25 pp', images: [W.pantaiCenang] },
       { time: '19:00', title: 'Beachfront halal seafood', cost: 'RM25–35 pp', halal: true },
