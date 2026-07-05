@@ -96,11 +96,12 @@ export const BUDGET = [
   { category: 'Accommodation (13 nights)', min: 550, max: 830, note: 'Budget twin-share ÷2 pp · 6 KL nights + 3 Penang + 4 Langkawi' },
   { category: 'Transport', min: 345, max: 440, note: 'Buses, ferries, ETS train, cable car, Grab' },
   { category: 'Food & drink', min: 600, max: 700, note: '~50 MYR/day, hawker-heavy, halal-checked' },
-  { category: 'Snacks, drinks & extras', min: 140, max: 210, note: '~RM10–15/day — water, juice, street snacks, trying new things' },
+  { category: 'Snacks, drinks & extras', min: 280, max: 420, note: '~RM20–30/day — cendol, bubble tea, roadside snacks, fresh juice, trying everything' },
   { category: 'Activities & adventure', min: 980, max: 1080, note: 'Towers, Genting, ESCAPE, SkyCab, kayak, jet ski, Zoo Negara, Broga Hill' },
   { category: 'Souvenirs & duty-free', min: 100, max: 200, note: 'Optional — Langkawi is duty-free' },
   { category: 'Misc (SIM, laundry, tips)', min: 80, max: 120, note: 'MDAC is free; SIM ~RM40' },
-  { category: 'CORE TOTAL', min: 2795, max: 3580, note: '≈ 600–768 € per person (1€ = 4.66 MYR)', highlight: true },
+  { category: 'Hidden & unexpected costs', min: 150, max: 250, note: 'Surge-priced Grabs, pay toilets, pharmacy, forgotten items, price creep' },
+  { category: 'CORE TOTAL', min: 3085, max: 4040, note: '≈ 662–867 € per person (1€ = 4.66 MYR)', highlight: true },
   { category: 'Suggested buffer', min: 400, max: 500, note: 'Upgrades, extras, bad-weather plan B' },
 ];
 
