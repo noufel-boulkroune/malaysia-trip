@@ -34,8 +34,8 @@ export const TRIP_META = {
 export const CITIES = [
   { name: 'Kuala Lumpur', nights: 3, vibe: 'Arrival, Towers, Batu Caves, Genting day trip', color: '#f97316' },
   { name: 'Penang', nights: 3, vibe: 'Heritage, street art, Monkey Beach + ESCAPE', color: '#e85d4c' },
-  { name: 'Langkawi', nights: 4, vibe: 'SkyCab, mangrove kayak, jet ski, sea-view pool', color: '#2a9d8f' },
-  { name: 'Kuala Lumpur', nights: 3, vibe: 'Broga Hill sunrise, Zoo Negara pandas, Chinatown, decompress', color: '#f97316' },
+  { name: 'Langkawi', nights: 5, vibe: 'SkyCab, mangrove kayak, jet ski, sea-view pool, extra chill day', color: '#2a9d8f' },
+  { name: 'Kuala Lumpur', nights: 2, vibe: 'Broga Hill sunrise, Zoo Negara or Sunway Lagoon, Chinatown', color: '#f97316' },
 ];
 
 export const OPTIONS = {
@@ -47,7 +47,26 @@ export const OPTIONS = {
       { id: 'none', label: 'Genting — free explore only', cost: 0, desc: 'Cable car + Chin Swee Temple + viewpoints' },
       { id: 'skytropolis', label: 'Genting + Skytropolis indoor', cost: 80, desc: 'RM70–90 · Good if raining', book: 'https://www.klook.com' },
       { id: 'skyworlds', label: 'Genting + SkyWorlds outdoor', cost: 168, desc: 'RM168 online · Big theme park at the Genting peak', book: 'https://www.gentingskyworlds.com' },
-      { id: 'sunwayLagoon', label: 'SWAP → Sunway Lagoon (skip Genting)', cost: 280, desc: 'RM263 all-park foreigner + Grab · 6 zones: water, amusement, wildlife, extreme, scream, lost lagoon · Full day, replaces Genting entirely', book: 'https://sunwaylagoon.com/etickets/' },
+    ],
+  },
+  langkawiExtraDay: {
+    id: 'langkawiExtraDay',
+    label: 'Langkawi extra day (Day 11)',
+    day: 11,
+    choices: [
+      { id: 'restDay', label: 'Rest day — beach & pool', cost: 0, desc: 'No plan. Sleep in, swim, nap. The point of the extra night.' },
+      { id: 'skytrex', label: 'Skytrex Adventure Langkawi', cost: 100, desc: 'RM90–120 · Treetop obstacle course & ziplines, ~2–3h', book: 'https://www.skytrexadventure.com' },
+      { id: 'atv', label: 'ATV jungle tour', cost: 130, desc: 'RM100–150 · Guided jungle/paddy-field ATV ride, ~2h' },
+    ],
+  },
+  finalDayActivity: {
+    id: 'finalDayActivity',
+    label: 'Last full day pick (Day 13 afternoon)',
+    day: 13,
+    choices: [
+      { id: 'freeTime', label: 'Free time / rest', cost: 0, desc: 'No extra activity — pool, nap, or last-minute shopping' },
+      { id: 'zooNegara', label: 'Zoo Negara (Giant Pandas)', cost: 88, desc: 'RM88 pp · Xing Xing & Liang Liang, Malaysia\'s only giant pandas', book: 'https://ticket.zoonegara.my' },
+      { id: 'sunwayLagoon', label: 'Sunway Lagoon', cost: 280, desc: 'RM263–268 foreigner + Grab · 6 zones: water, amusement, wildlife, extreme, scream, lost lagoon · Full day — pairs less well with the 04:30 Broga wake-up', book: 'https://sunwaylagoon.com/etickets/' },
     ],
   },
   langkawiActivity: {
