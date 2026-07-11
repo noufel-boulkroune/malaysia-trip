@@ -19,6 +19,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { ExternalLink, CheckCircle2, Circle, X, AlertCircle } from 'lucide-react';
 import { BOOKINGS, BOOKING_PRESETS } from '../data/tripData';
 import { useBookings } from '../hooks/useBookings';
+import SectionHeader from './SectionHeader';
 
 const PENDING_KEY = 'mt-pending-click';
 
@@ -171,19 +172,17 @@ export default function BookingsSection() {
   return (
     <section id="bookings" className="py-20 bg-surface-card/30">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="flex items-end justify-between mb-10">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-3">Direct links</p>
-            <h2 className="font-display text-4xl sm:text-5xl font-extrabold">BOOK & PAY</h2>
-            <p className="text-white/40 text-sm mt-2">Official sites first — avoid beach touts (+20–50% markup)</p>
-          </div>
-          {bookedCount > 0 && (
-            <div className="text-right shrink-0 ml-4">
-              <p className="text-2xl font-display font-bold text-green-400">{bookedCount}</p>
+        <SectionHeader
+          eyebrow="Direct links"
+          title="Book & pay"
+          subtitle="Official sites first — avoid beach touts (+20–50% markup)."
+          right={bookedCount > 0 && (
+            <div className="text-right">
+              <p className="text-2xl font-display font-bold text-brand-bright">{bookedCount}</p>
               <p className="text-xs text-white/30">booked</p>
             </div>
           )}
-        </div>
+        />
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {BOOKINGS.map((b) => {
@@ -194,8 +193,8 @@ export default function BookingsSection() {
             return (
               <div
                 key={b.item}
-                className={`card overflow-hidden flex flex-col transition-colors ${
-                  isBooked ? 'border-green-500/30 bg-green-500/5' : 'hover:border-brand-red/30'
+                className={`card-interactive overflow-hidden flex flex-col ${
+                  isBooked ? 'border-green-500/30 bg-green-500/5' : 'hover:border-brand-bright/30'
                 }`}
               >
                 {/* Image */}
@@ -233,7 +232,7 @@ export default function BookingsSection() {
                     )}
                   </div>
 
-                  <p className="text-green-400 font-bold text-sm">{b.price}</p>
+                  <p className="text-brand-bright font-bold text-sm font-mono">{b.price}</p>
                   <p className="text-xs text-white/30 mt-0.5 mb-3">{b.source}</p>
 
                   {/* Paid amount editor — shown when booked */}

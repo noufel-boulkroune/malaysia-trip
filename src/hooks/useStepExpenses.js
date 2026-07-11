@@ -2,7 +2,7 @@
  * useStepExpenses.js — Shared step-level expense state
  *
  * localStorage key : 'mt-step-expenses'
- * Shape            : { [stepId: string]: { paid: number, date: string } }
+ * Shape            : { [stepId: string]: { paid: number, date: string, title?: string } }
  * stepId format    : 'd{dayNum}-s{stepIndex}'  e.g. 'd3-s2'
  *
  * Used by: StepTimeline (write), MoneyTracker (read for totals + summary)
@@ -46,12 +46,13 @@ export function useStepExpenses() {
     };
   }, []);
 
-  const logStep = useCallback((stepId, paid) => {
+  const logStep = useCallback((stepId, paid, title) => {
     setStepExpenses(prev => {
       const next = {
         ...prev,
         [stepId]: {
           paid,
+          title,
           date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }),
         },
       };

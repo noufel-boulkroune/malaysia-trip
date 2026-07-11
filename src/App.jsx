@@ -27,7 +27,9 @@ import HotelsSection from './components/HotelsSection';
 import PrepSection from './components/PrepSection';
 import MoneyTracker from './components/MoneyTracker';
 import { useTripOptions } from './hooks/useTripOptions';
-import { getDayByNumber } from './data/tripData';
+import { getDayByNumber, DAYS } from './data/tripData';
+
+const LAST_DAY = DAYS.length;
 
 export default function App() {
   const [activeDay, setActiveDay] = useState(null);
@@ -82,9 +84,9 @@ export default function App() {
           optionValues={values}
           onClose={closeDay}
           onPrev={() => activeDay > 1 && openDay(activeDay - 1)}
-          onNext={() => activeDay < 14 && openDay(activeDay + 1)}
+          onNext={() => activeDay < LAST_DAY && openDay(activeDay + 1)}
           hasPrev={activeDay > 1}
-          hasNext={activeDay < 14}
+          hasNext={activeDay < LAST_DAY}
         />
       )}
 

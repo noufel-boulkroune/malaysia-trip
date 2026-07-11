@@ -15,13 +15,12 @@ Built with React + Vite + Tailwind CSS. Runs entirely in the browser — no back
 |---|---|---|
 | Kuala Lumpur | 22 Jul → 25 Jul | 3 |
 | Penang | 25 Jul → 28 Jul | 3 |
-| Langkawi | 28 Jul → 01 Aug | 4 |
-| Cameron Highlands | 01 Aug → 03 Aug | 2 |
-| Kuala Lumpur (return) | 03 Aug → 04 Aug | 1 |
+| Langkawi | 28 Jul → 02 Aug | 5 |
+| Kuala Lumpur (return) | 02 Aug → 04 Aug | 2 |
 
-**Budget:** 3,491.50 MYR per person (your stated budget).  
-**Core estimated cost:** RM 2,550–3,240 pp (budget-tier hotels, twin-share).  
-**Exchange rate:** 1 € ≈ 4.66 MYR.
+**Group:** 2 travelers, twin-share (`GROUP_SIZE` in `tripData.js`) — every shared cost (Grab, scooter, room) is the per-car/per-room price ÷ 2.  
+**Core estimated cost:** RM 3,085–4,295 pp (budget-tier hotels, twin-share, incl. tourism tax) + RM 400–500 suggested buffer.  
+**Exchange rate:** 1 € ≈ 4.66 MYR (`EUR_RATE` in `tripData.js` — the only place it's defined).
 
 ---
 
@@ -84,23 +83,27 @@ Each file has a README comment at the top — read it before diving into the cod
 
 ## Design System
 
-Theme: **"Midnight Ocean"** — deep navy-tinted darks + electric blue primary + amber warnings.
+Theme: **"Island Dusk"** — warm ink darks + deep teal primary + amber warnings.
 
 All colours are defined as semantic tokens in `tailwind.config.js`. **Never hardcode hex values in components.**
 
 ```
-brand-red       #2563EB   Electric blue — primary CTA, badges, active states
-brand-red-dark  #1D4ED8   Blue hover
-brand-gold      #F59E0B   Amber — warnings, budget alerts, hotel tiers
-brand-danger    #EF4444   True red — over-budget states, error text
-surface-bg      #06090F   Page background
-surface-card    #0C1118   Card background
-surface-elevated #131D2B  Raised surfaces (modals, dropdowns)
-surface-border  #1A2740   Borders
-surface-hover   #172338   Interactive hover
+brand-red       #0FA18C   Deep teal — primary CTA, badges, active states (name kept for compat)
+brand-red-dark  #0B8A77   Teal hover
+brand-bright    #2DD4BF   Bright teal — accent text, money values, focus states
+brand-gold      #F5B841   Amber — warnings, budget alerts, hotel tiers
+brand-danger    #F26D6D   Coral red — over-budget states, error text
+surface-bg      #0B0E13   Page background
+surface-card    #11151C   Card background
+surface-elevated #1A202B  Raised surfaces (modals, dropdowns)
+surface-border  #242C3A   Borders
+surface-hover   #202836   Interactive hover
 ```
 
-Fonts: `font-display` = **Syne** (bold headers), `font-sans` = **Inter** (body text).
+Fonts: `font-display` = **Space Grotesk** (headers), `font-sans` = **Inter** (body text).
+Shared UI: `SectionHeader` (all section titles), `ExpenseConfirmModal` (one-tap expense
+confirm — used by StepTimeline and MoneyTracker), utility classes `.card`,
+`.card-interactive`, `.btn-primary`, `.btn-ghost`, `.input` in `index.css`.
 
 ---
 
@@ -110,9 +113,10 @@ Fonts: `font-display` = **Syne** (bold headers), `font-sans` = **Inter** (body t
 
 | Export | Shape | Consumer |
 |---|---|---|
+| `EUR_RATE` | `number` (4.66) — single source for MYR→EUR | Hero, BudgetSection, HotelsSection |
 | `TRIP_META` | `{title, dates, duration, rate, heroImage, ...}` | Hero, BudgetSection |
-| `CITIES` | `[{name, nights, vibe, color}]` | RouteSection |
-| `OPTIONS` | `{gentingAddon, langkawiActivity, langkawiStay}` | OptionsPanel, useTripOptions |
+| `CITIES` | `[{name, nights, vibe, color}]` | RouteSection, Hero (city count) |
+| `OPTIONS` | `{gentingAddon, langkawiExtraDay, finalDayActivity, langkawiActivity, langkawiStay}` | OptionsPanel, useTripOptions |
 | `BUDGET` | `[{category, min, max, note, highlight?}]` | BudgetSection — **all totals derived from this** |
 | `BOOKING_PRESETS` | `[{id, day, label, estMin, estMax, url}]` | MoneyTracker, BookingsSection |
 | `BOOKINGS` | `[{item, price, url, image, presetId}]` | BookingsSection |
@@ -143,20 +147,33 @@ This resolves via 302 redirect to the correct CDN URL.
 | Key | Owner | Shape |
 |---|---|---|
 | `mt-bookings` | `useBookings` hook | `{[presetId]: {booked: boolean, paid: number}}` |
-| `mt-entries` | MoneyTracker | `[{id, desc, amount, cat, day, date}]` |
-| `mt-budget` | MoneyTracker | `number` (default: 3491.5) |
-| `mt-trip-options` | useTripOptions | `{gentingAddon, langkawiActivity, langkawiStay}` |
+| `mt-entries` | `useExpenses` hook | `[{id, desc, amount, cat, day, date}]` |
+| `mt-budget` | `useBudget` hook | `number` override, or `null` → follows the trip estimate |
+| `mt-step-expenses` | `useStepExpenses` hook | `{[stepId]: {paid, date, title?}}` |
+| `mt-trip-options` | `useTripOptions` hook | one key per group in `OPTIONS`, value = choice id |
+| `mt-current-day` | MoneyTracker | `number` (which trip day the tracker follows) |
 | `mt-checklist` | PrepSection | `string[]` (checked item ids) |
 | `mt-packing` | PrepSection | `string[]` (packed item ids) |
 
 ### Same-tab sync (critical to understand)
-`useBookings` dispatches `new CustomEvent('mt:bookings')` on every write.  
-All three booking-aware components (BookingsSection, HotelsSection, MoneyTracker) listen to this  
-event and re-read storage → they stay in sync within the same tab without a React context.
+Every shared-state hook (`useBookings`, `useExpenses`, `useBudget`, `useStepExpenses`,
+`useTripOptions`) dispatches a `CustomEvent` (`mt:bookings`, `mt:entries`, `mt:budget`,
+`mt:step-expenses`, `mt:trip-options`) on every write and re-reads storage on that event →
+all components stay in sync within the same tab without a React context. Cross-tab sync
+comes from the native `storage` event. **Never read/write these keys directly in a
+component — always go through the hook**, or the other consumers won't see the change.
 
 ---
 
 ## Key UX Flows
+
+### Checkbox-driven expense tracking (core flow)
+Every itinerary step with a parseable cost is a planned-expense checkbox.
+Tick it (in the day view timeline OR the MoneyTracker's "planned expenses"
+checklist for the selected day) → `ExpenseConfirmModal` opens pre-filled with
+the planned amount → Confirm (or edit the amount first) → saved via
+`useStepExpenses` under stepId `d{day}-s{index}` → every total updates
+everywhere instantly. Manual entry is only for unplanned expenses.
 
 ### Day navigation
 `DayCard` click → `openDay(n)` in App → `history.pushState({day:n})` → DayDetail renders  

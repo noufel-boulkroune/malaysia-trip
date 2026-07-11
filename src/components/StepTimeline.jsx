@@ -1,155 +1,63 @@
 /**
  * StepTimeline.jsx — Numbered itinerary step cards for a single day
  *
+ * Every step with a parseable cost is a *planned expense checkbox*: tapping
+ * the checkbox (or the cost chip) opens ExpenseConfirmModal pre-filled with
+ * the planned amount — one tap to confirm, edit first if the price differed.
+ * Confirmed steps turn green and feed daySpentFor / trip totals via
+ * useStepExpenses (stepId 'd{dayNum}-s{stepIndex}').
+ *
  * Props
  * -----
  * steps[]       — step objects from DAYS[n].steps in tripData.js
- * dayNum        — current day number (used to build stepId for expense tracking)
- * stepExpenses  — { [stepId]: {paid, date} } from useStepExpenses hook
- * onLogStep     — (stepId, paid, stepTitle) => void  called on expense confirm
- * onRemoveStep  — (stepId) => void  called on "undo" tap
- *
- * Step fields: time, title, desc, cost, halal, optional, images, tip, mapsUrl, book
- * stepId format: 'd{dayNum}-s{stepIndex}'
+ * dayNum        — current day number (used to build stepId)
+ * stepExpenses  — { [stepId]: {paid, date, title?} } from useStepExpenses hook
+ * onLogStep     — (stepId, paid, stepTitle) => void
+ * onRemoveStep  — (stepId) => void
  */
 import { useState } from 'react';
-import { MapPin, ExternalLink, Lightbulb, Utensils, CheckCircle2, Plus, X } from 'lucide-react';
+import { MapPin, ExternalLink, Lightbulb, Utensils, Check, Plus } from 'lucide-react';
 import { parseStepCost } from '../hooks/useStepExpenses';
+import ExpenseConfirmModal from './ExpenseConfirmModal';
 
-/* ─── Expense popup ──────────────────────────────────────────────────────── */
-function ExpensePopup({ step, stepId, existing, onConfirm, onRemove, onClose }) {
-  const estimate = parseStepCost(step.cost);
-  const [amount, setAmount] = useState(
-    existing != null ? String(existing.paid) : estimate != null ? String(estimate) : ''
-  );
-
-  const isFree = estimate === 0;
-
-  function handleConfirm() {
-    const num = parseFloat(amount);
-    onConfirm(stepId, isNaN(num) ? 0 : num, step.title);
-    onClose();
-  }
-
-  return (
-    <div
-      className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/80 animate-fade-in"
-      onClick={onClose}
-    >
-      <div
-        className="w-full max-w-sm bg-surface-card border border-surface-border rounded-3xl p-5 animate-slide-up"
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <p className="text-xs text-white/30 uppercase tracking-widest mb-1">Log expense</p>
-            <h3 className="font-display font-bold text-base leading-snug">{step.title}</h3>
-            {step.cost && <p className="text-xs text-white/40 mt-0.5">Estimated: {step.cost}</p>}
-          </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-surface-elevated text-white/30 hover:text-white transition-colors">
-            <X size={15} />
-          </button>
-        </div>
-
-        {isFree ? (
-          /* Free item — just confirm */
-          <div className="space-y-3">
-            <div className="p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-center">
-              <p className="text-green-400 font-semibold text-sm">This activity is Free!</p>
-              <p className="text-xs text-white/40 mt-0.5">No expense to log</p>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => { onConfirm(stepId, 0, step.title); onClose(); }}
-                className="flex-1 py-2.5 bg-green-500 hover:bg-green-400 text-white font-bold rounded-xl text-sm transition-colors"
-              >
-                Mark as done
-              </button>
-              {existing && (
-                <button onClick={() => { onRemove(stepId); onClose(); }} className="px-3 py-2.5 bg-surface-elevated hover:bg-surface-hover border border-surface-border rounded-xl text-xs text-white/50 transition-colors">
-                  Undo
-                </button>
-              )}
-            </div>
-          </div>
-        ) : (
-          /* Paid item — confirm or edit amount */
-          <div className="space-y-3">
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-sm font-mono">RM</span>
-              <input
-                autoFocus
-                type="number"
-                min="0"
-                step="1"
-                value={amount}
-                onChange={e => setAmount(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleConfirm()}
-                placeholder="0"
-                className="w-full bg-surface-elevated border border-surface-border rounded-xl pl-10 pr-4 py-3 text-white text-lg font-mono focus:outline-none focus:border-brand-red"
-              />
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={handleConfirm}
-                className="flex-1 py-2.5 bg-brand-red hover:bg-brand-red-dark text-white font-bold rounded-xl text-sm transition-colors"
-              >
-                {existing ? 'Update' : 'Log it'}
-              </button>
-              {existing && (
-                <button onClick={() => { onRemove(stepId); onClose(); }} className="px-3 py-2.5 bg-surface-elevated hover:bg-surface-hover border border-surface-border rounded-xl text-xs text-white/50 transition-colors">
-                  Remove
-                </button>
-              )}
-              <button onClick={onClose} className="px-3 py-2.5 bg-surface-elevated hover:bg-surface-hover border border-surface-border rounded-xl text-xs text-white/50 transition-colors">
-                Skip
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ─── Step card ──────────────────────────────────────────────────────────── */
 function StepCard({ step, stepId, index, isLast, stepExpenses, onLogStep, onRemoveStep }) {
   const [showPopup, setShowPopup] = useState(false);
   const existing = stepExpenses?.[stepId];
   const isDone   = existing != null;
-  const canLog   = !!step.cost || step.cost === 'Free';
+  const estimate = parseStepCost(step.cost);
+  const canLog   = estimate != null;
 
   return (
     <div className="relative flex gap-4 sm:gap-6">
       {!isLast && (
-        <div className="absolute left-4 sm:left-5 top-10 bottom-0 w-px bg-surface-border" />
+        <div className={`absolute left-4 sm:left-5 top-10 bottom-0 w-px ${isDone ? 'bg-brand-red/40' : 'bg-surface-border'}`} />
       )}
 
-      {/* Step number / check */}
+      {/* Checkbox (loggable) or step number */}
       <div className="shrink-0 flex flex-col items-center">
         <button
           onClick={() => canLog && setShowPopup(true)}
-          className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full border flex items-center justify-center font-display font-bold text-xs transition-all ${
+          className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center font-display font-bold text-xs transition-all ${
             isDone
-              ? 'bg-green-500/20 border-green-500/50 text-green-400'
+              ? 'bg-brand-red border-brand-red text-white shadow-cta'
               : canLog
-              ? 'bg-surface-elevated border-surface-border text-white/60 hover:border-brand-red/50 hover:text-brand-red cursor-pointer'
-              : 'bg-surface-elevated border-surface-border text-white/60 cursor-default'
+              ? 'bg-surface-elevated border-white/25 text-white/50 hover:border-brand-bright hover:text-brand-bright cursor-pointer'
+              : 'bg-transparent border-surface-border text-white/30 cursor-default'
           }`}
-          title={isDone ? `RM${existing.paid} logged — tap to edit` : canLog ? 'Tap to log expense' : undefined}
+          title={isDone ? `RM${existing.paid} logged — tap to edit` : canLog ? 'Tap to confirm this expense' : undefined}
+          aria-label={isDone ? `Expense logged: RM${existing.paid}. Tap to edit` : canLog ? `Confirm expense: ${step.title}` : undefined}
           disabled={!canLog}
         >
-          {isDone ? <CheckCircle2 size={16} /> : index + 1}
+          {isDone ? <Check size={16} className="animate-pop" /> : index + 1}
         </button>
       </div>
 
       {/* Card */}
-      <div className="flex-1 pb-8">
+      <div className="flex-1 pb-7">
         <div className={`border rounded-2xl p-4 sm:p-5 transition-colors ${
           isDone
-            ? 'bg-green-500/5 border-green-500/20'
-            : 'bg-surface-elevated border-surface-border hover:border-brand-red/30'
+            ? 'bg-brand-red/5 border-brand-red/25'
+            : 'bg-surface-card border-surface-border hover:border-white/15'
         }`}>
           {/* Meta row */}
           <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -165,32 +73,27 @@ function StepCard({ step, stepId, index, isLast, stepExpenses, onLogStep, onRemo
               </span>
             )}
 
-            {/* Cost + log button */}
+            {/* Planned expense chip — the second tap target for logging */}
             <div className="ml-auto flex items-center gap-1.5">
               {isDone ? (
                 <button
                   onClick={() => setShowPopup(true)}
-                  className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-green-500/15 border border-green-500/25 text-green-400 font-semibold hover:bg-green-500/25 transition-colors"
+                  className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-brand-red/15 border border-brand-red/30 text-brand-bright font-bold hover:bg-brand-red/25 transition-colors"
                 >
-                  <CheckCircle2 size={11} /> RM{existing.paid}
+                  <Check size={12} /> RM{existing.paid} paid
                 </button>
-              ) : (
-                <>
-                  {step.cost && (
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-surface-border text-white/50">
-                      {step.cost}
-                    </span>
-                  )}
-                  {canLog && (
-                    <button
-                      onClick={() => setShowPopup(true)}
-                      className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-brand-red/10 border border-brand-red/25 text-brand-red font-semibold hover:bg-brand-red/20 transition-colors"
-                    >
-                      <Plus size={10} /> Log
-                    </button>
-                  )}
-                </>
-              )}
+              ) : canLog ? (
+                <button
+                  onClick={() => setShowPopup(true)}
+                  className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-surface-elevated border border-white/15 text-white/70 font-semibold hover:border-brand-bright hover:text-brand-bright transition-colors"
+                >
+                  <Plus size={11} /> {step.cost}
+                </button>
+              ) : step.cost ? (
+                <span className="text-xs px-2 py-0.5 rounded-full bg-surface-border text-white/50">
+                  {step.cost}
+                </span>
+              ) : null}
             </div>
           </div>
 
@@ -204,7 +107,7 @@ function StepCard({ step, stepId, index, isLast, stepExpenses, onLogStep, onRemo
                 href={step.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 shrink-0 text-xs text-white/40 hover:text-white/70 transition-colors mt-0.5"
+                className="flex items-center gap-1 shrink-0 text-xs text-white/40 hover:text-brand-bright transition-colors mt-0.5"
                 aria-label="Open in Google Maps"
               >
                 <MapPin size={13} /> Map
@@ -236,7 +139,7 @@ function StepCard({ step, stepId, index, isLast, stepExpenses, onLogStep, onRemo
               href={step.book}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 mt-4 w-full justify-center px-4 py-2.5 bg-brand-red hover:bg-brand-red-dark text-white font-bold text-sm rounded-xl transition-colors"
+              className="inline-flex items-center gap-2 mt-4 w-full justify-center px-4 py-2.5 btn-primary text-sm"
             >
               Book now <ExternalLink size={13} />
             </a>
@@ -244,14 +147,14 @@ function StepCard({ step, stepId, index, isLast, stepExpenses, onLogStep, onRemo
         </div>
       </div>
 
-      {/* Expense popup */}
       {showPopup && (
-        <ExpensePopup
-          step={step}
-          stepId={stepId}
+        <ExpenseConfirmModal
+          title={step.title}
+          costLabel={step.cost}
+          estimate={estimate}
           existing={existing}
-          onConfirm={onLogStep}
-          onRemove={onRemoveStep}
+          onConfirm={(amount) => onLogStep(stepId, amount, step.title)}
+          onRemove={() => onRemoveStep(stepId)}
           onClose={() => setShowPopup(false)}
         />
       )}
@@ -259,11 +162,11 @@ function StepCard({ step, stepId, index, isLast, stepExpenses, onLogStep, onRemo
   );
 }
 
-/* ─── Timeline ───────────────────────────────────────────────────────────── */
 export default function StepTimeline({ steps, dayNum, stepExpenses, onLogStep, onRemoveStep }) {
   return (
     <div className="mt-6">
-      <p className="text-xs font-bold uppercase tracking-widest text-brand-red mb-6">Itinerary</p>
+      <p className="section-eyebrow mb-2">Itinerary</p>
+      <p className="text-xs text-white/35 mb-6">Tap a checkbox when you pay — the planned amount is pre-filled.</p>
       {steps.map((step, i) => (
         <StepCard
           key={i}

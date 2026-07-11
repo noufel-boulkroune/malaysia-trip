@@ -3,12 +3,10 @@
  *
  * Props: activeDay (null | 1–14)
  *
- * localStorage keys
- * -----------------
- * mt-entries       — manual expense log [{id, desc, amount, cat, day, date}]
- * mt-budget        — user-editable trip budget (default: 3491.5 MYR)
- * mt-bookings      — shared via useBookings hook
- * mt-step-expenses — logged step costs via useStepExpenses hook
+ * State — ALL shared via hooks (useExpenses / useBudget / useBookings /
+ * useStepExpenses / useTripOptions) so this popup and SpendSection can
+ * never disagree on totals. Only 'mt-current-day' (which day am I on)
+ * is owned here.
  *
  * The popup itself only handles "which day am I on" + quick expense entry +
  * day-by-day budget tracking. Everything else (bookings, category summary,
@@ -18,12 +16,16 @@
 import { useState, useEffect, useMemo } from 'react';
 import {
   Wallet, Plus, X, Trash2, AlertTriangle, ChevronDown,
-  CalendarDays,
+  CalendarDays, Check,
 } from 'lucide-react';
-import { DAYS, BOOKING_PRESETS, calcDayCost, calcTripCostRange, getTripDay } from '../data/tripData';
+import { DAYS, calcDayCost, getTripDay } from '../data/tripData';
 import { useBookings } from '../hooks/useBookings';
-import { useStepExpenses } from '../hooks/useStepExpenses';
+import { useStepExpenses, parseStepCost } from '../hooks/useStepExpenses';
 import { useTripOptions } from '../hooks/useTripOptions';
+import { useExpenses } from '../hooks/useExpenses';
+import { useBudget } from '../hooks/useBudget';
+import { daySpentFor, calcSpendTotals } from '../utils/spend';
+import ExpenseConfirmModal from './ExpenseConfirmModal';
 
 const CATEGORIES  = ['Food', 'Transport', 'Activity', 'Accommodation', 'Shopping', 'Other'];
 
@@ -40,8 +42,6 @@ function loadKey(key, def) {
   try { return JSON.parse(localStorage.getItem(key) ?? 'null') ?? def; } catch { return def; }
 }
 function saveKey(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
-
-const TODAY_DAY = getTripDay();
 
 function Bar({ pct, danger, warn }) {
   return (
@@ -115,21 +115,33 @@ function DayProgressRow({ day, range, spentOnDay, isSelected, onClick }) {
 /* ─── Main component ─────────────────────────────────────────────────────── */
 export default function MoneyTracker({ activeDay }) {
   const [open,         setOpen]         = useState(false);
-  const [entries,      setEntries]      = useState(() => loadKey('mt-entries', []));
+  const { entries, addEntry: addSharedEntry, removeEntry } = useExpenses();
   const [bookings]                      = useBookings();
-  const { stepExpenses }                = useStepExpenses();
+  const { stepExpenses, logStep, removeStep } = useStepExpenses();
+  const [confirmStep,  setConfirmStep]  = useState(null); // {stepId, step} being confirmed
   const { values: tripOptionValues }    = useTripOptions();
-  const tripRange      = useMemo(() => calcTripCostRange(tripOptionValues), [tripOptionValues]);
-  const [budgetOverride] = useState(() => loadKey('mt-budget', null));
-  const budget          = budgetOverride ?? tripRange.max;
+  const { budget }                      = useBudget(tripOptionValues);
   const [showForm,     setShowForm]     = useState(false);
-  const [currentDay,   setCurrentDay]   = useState(() => loadKey('mt-current-day', TODAY_DAY ?? 1));
+  const [currentDay,   setCurrentDay]   = useState(() => loadKey('mt-current-day', getTripDay() ?? 1));
   const effectiveDay   = activeDay ?? currentDay;
   const [form,         setForm]         = useState({ desc: '', amount: '', cat: 'Food', day: effectiveDay ?? '' });
   const [err,          setErr]          = useState('');
 
-  useEffect(() => { saveKey('mt-entries', entries); }, [entries]);
   useEffect(() => { saveKey('mt-current-day', currentDay); }, [currentDay]);
+
+  // Escape closes the modal (unless a confirm popup is on top, which handles
+  // its own Escape); lock body scroll while open.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === 'Escape' && !confirmStep) setOpen(false); };
+    window.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [open, confirmStep]);
   useEffect(() => {
     if (open) setForm(f => ({ ...f, day: effectiveDay ?? '' }));
   }, [open, effectiveDay]);
@@ -137,41 +149,29 @@ export default function MoneyTracker({ activeDay }) {
     if (activeDay) setCurrentDay(activeDay);
   }, [activeDay]);
 
-  /* ── Totals ── */
-  const bookedTotal = useMemo(() =>
-    Object.values(bookings).filter(b => b.booked).reduce((s, b) => s + (b.paid ?? 0), 0),
-  [bookings]);
-
-  const stepTotal = useMemo(() =>
-    Object.values(stepExpenses).reduce((s, e) => s + (e.paid ?? 0), 0),
-  [stepExpenses]);
-
-  const spendTotal  = useMemo(() => entries.reduce((s, e) => s + e.amount, 0), [entries]);
-  const totalSpent  = spendTotal + bookedTotal + stepTotal;
-  const remaining   = budget - totalSpent;
-
-  /* ── Day helpers ── */
-  function daySpentFor(dayNum) {
-    const entriesAmt = entries
-      .filter(e => e.day === dayNum)
-      .reduce((s, e) => s + e.amount, 0);
-
-    const bookingsAmt = Object.entries(bookings)
-      .filter(([id, b]) => b.booked && BOOKING_PRESETS.find(p => p.id === id)?.day === dayNum)
-      .reduce((s, [, b]) => s + (b.paid ?? 0), 0);
-
-    const stepsAmt = Object.entries(stepExpenses)
-      .filter(([id]) => id.startsWith(`d${dayNum}-`))
-      .reduce((s, [, e]) => s + (e.paid ?? 0), 0);
-
-    return entriesAmt + bookingsAmt + stepsAmt;
-  }
+  /* ── Totals — shared helpers so this always matches SpendSection ── */
+  const { totalSpent } = useMemo(
+    () => calcSpendTotals(entries, bookings, stepExpenses),
+    [entries, bookings, stepExpenses]
+  );
+  const remaining = budget - totalSpent;
 
   const dayData    = DAYS.find(d => d.day === effectiveDay);
+  // Planned-expense checklist for the selected day: every step with a
+  // parseable cost, sharing stepIds with StepTimeline so both stay in sync.
+  const dayChecklist = useMemo(() => {
+    if (!dayData) return [];
+    return dayData.steps
+      .map((step, i) => ({ step, stepId: `d${dayData.day}-s${i}`, estimate: parseStepCost(step.cost) }))
+      .filter(item => item.estimate != null && item.estimate > 0);
+  }, [dayData]);
   const dayRange   = useMemo(() => dayData ? calcDayCost(dayData, tripOptionValues) : { min: 0, max: 0 }, [dayData, tripOptionValues]);
   const dayPlanned = dayRange.max;
   const dayPlannedLabel = dayRange.min === dayRange.max ? `${dayRange.max}` : `${dayRange.min}–${dayRange.max}`;
-  const daySpent   = useMemo(() => daySpentFor(effectiveDay), [entries, bookings, stepExpenses, effectiveDay]);
+  const daySpent   = useMemo(
+    () => daySpentFor(effectiveDay, entries, bookings, stepExpenses),
+    [entries, bookings, stepExpenses, effectiveDay]
+  );
   const dayRemain  = dayPlanned - daySpent;
   const dayPct     = dayPlanned > 0 ? (daySpent / dayPlanned) * 100 : 0;
   const dayOver    = daySpent > dayPlanned;
@@ -181,19 +181,18 @@ export default function MoneyTracker({ activeDay }) {
     e.preventDefault();
     const amt = parseFloat(form.amount);
     if (!form.desc.trim() || isNaN(amt) || amt <= 0) { setErr('Enter a description and amount.'); return; }
-    setEntries(prev => [{
-      id: Date.now(), desc: form.desc.trim(), amount: amt,
-      cat: form.cat, day: form.day || null,
-      date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }),
-    }, ...prev]);
+    addSharedEntry({ desc: form.desc.trim(), amount: amt, cat: form.cat, day: form.day || null });
     setForm(f => ({ ...f, desc: '', amount: '' }));
     setErr('');
     setShowForm(false);
   }
 
-  const btnLabel = effectiveDay && dayPlanned > 0
-    ? `Day ${effectiveDay}: RM${Math.round(dayRemain)}`
-    : `RM${Math.round(remaining)} left`;
+  // Before the trip the total is what matters; during the trip (or with a
+  // day view open) the current day's remaining budget is more actionable.
+  const duringTrip = getTripDay() != null;
+  const btnLabel = (activeDay || duringTrip) && effectiveDay && dayPlanned > 0
+    ? `Day ${effectiveDay}: RM${Math.round(dayRemain)} left`
+    : `RM${Math.round(remaining).toLocaleString()} left`;
   const isDanger  = remaining < 0;
   const isWarning = !isDanger && budget > 0 && (totalSpent / budget) * 100 >= 70;
 
@@ -228,7 +227,9 @@ export default function MoneyTracker({ activeDay }) {
               <div>
                 <h2 className="font-display font-bold text-lg">Days tracking</h2>
                 <p className="text-xs text-white/30 mt-0.5">
-                  RM{Math.round(totalSpent).toLocaleString()} spent · RM{Math.round(remaining >= 0 ? remaining : 0).toLocaleString()} left
+                  RM{Math.round(totalSpent).toLocaleString()} spent · {remaining >= 0
+                    ? `RM${Math.round(remaining).toLocaleString()} left`
+                    : <span className="text-brand-danger font-semibold">RM{Math.round(-remaining).toLocaleString()} over</span>}
                 </p>
               </div>
               <button onClick={() => setOpen(false)} className="p-1.5 rounded-lg hover:bg-surface-elevated transition-colors">
@@ -262,8 +263,8 @@ export default function MoneyTracker({ activeDay }) {
                   </select>
                 </div>
                 <button
-                  onClick={() => setCurrentDay(d => Math.min(14, d + 1))}
-                  disabled={!!activeDay || currentDay >= 14}
+                  onClick={() => setCurrentDay(d => Math.min(DAYS.length, d + 1))}
+                  disabled={!!activeDay || currentDay >= DAYS.length}
                   className="p-1.5 rounded-lg hover:bg-surface-elevated disabled:opacity-20 disabled:cursor-not-allowed text-white/50 shrink-0"
                 >
                   ›
@@ -299,12 +300,50 @@ export default function MoneyTracker({ activeDay }) {
                 </div>
               )}
 
-              {/* Add expense */}
+              {/* Planned expenses checklist — tick as you pay */}
+              {dayChecklist.length > 0 && (
+                <div>
+                  <p className="text-xs text-white/30 uppercase tracking-wider mb-2">
+                    Day {effectiveDay} planned expenses
+                  </p>
+                  <div className="space-y-1.5">
+                    {dayChecklist.map(({ step, stepId, estimate }) => {
+                      const logged = stepExpenses[stepId];
+                      const done = logged != null;
+                      return (
+                        <button
+                          key={stepId}
+                          onClick={() => setConfirmStep({ step, stepId, estimate })}
+                          className={`w-full flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors ${
+                            done
+                              ? 'bg-brand-red/5 border-brand-red/25'
+                              : 'bg-surface-elevated border-surface-border hover:border-brand-bright/40'
+                          }`}
+                        >
+                          <span className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 ${
+                            done ? 'bg-brand-red border-brand-red text-white' : 'border-white/25'
+                          }`}>
+                            {done && <Check size={12} className="animate-pop" />}
+                          </span>
+                          <span className={`flex-1 min-w-0 text-sm truncate ${done ? 'text-white/45 line-through' : 'text-white/85'}`}>
+                            {step.title}
+                          </span>
+                          <span className={`text-xs font-mono font-bold shrink-0 ${done ? 'text-brand-bright' : 'text-white/40'}`}>
+                            {done ? `RM${logged.paid}` : step.cost}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Add unplanned expense */}
               <button
                 onClick={() => setShowForm(f => !f)}
                 className="w-full flex items-center justify-center gap-2 py-3 btn-primary text-sm font-semibold rounded-xl"
               >
-                <Plus size={16} /> Add expense
+                <Plus size={16} /> Add other expense
                 <ChevronDown size={14} className={`transition-transform ${showForm ? 'rotate-180' : ''}`} />
               </button>
 
@@ -363,7 +402,7 @@ export default function MoneyTracker({ activeDay }) {
                         </div>
                       </div>
                       <span className="text-sm font-bold shrink-0">RM{e.amount}</span>
-                      <button onClick={() => setEntries(p => p.filter(x => x.id !== e.id))} className="p-1 rounded hover:bg-red-500/20 hover:text-red-400 text-white/20 transition-colors">
+                      <button onClick={() => removeEntry(e.id)} className="p-1 rounded hover:bg-red-500/20 hover:text-red-400 text-white/20 transition-colors">
                         <Trash2 size={13} />
                       </button>
                     </div>
@@ -373,14 +412,14 @@ export default function MoneyTracker({ activeDay }) {
 
               {/* All 14 days */}
               <div>
-                <p className="text-xs text-white/30 uppercase tracking-wider mb-3">All 14 days</p>
+                <p className="text-xs text-white/30 uppercase tracking-wider mb-3">All {DAYS.length} days</p>
                 <div className="space-y-2">
                   {DAYS.map(d => (
                     <DayProgressRow
                       key={d.day}
                       day={d}
                       range={calcDayCost(d, tripOptionValues)}
-                      spentOnDay={daySpentFor(d.day)}
+                      spentOnDay={daySpentFor(d.day, entries, bookings, stepExpenses)}
                       isSelected={d.day === effectiveDay}
                       onClick={() => setCurrentDay(d.day)}
                     />
@@ -391,6 +430,19 @@ export default function MoneyTracker({ activeDay }) {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Confirm popup for a ticked planned expense */}
+      {confirmStep && (
+        <ExpenseConfirmModal
+          title={confirmStep.step.title}
+          costLabel={confirmStep.step.cost}
+          estimate={confirmStep.estimate}
+          existing={stepExpenses[confirmStep.stepId]}
+          onConfirm={(amount) => logStep(confirmStep.stepId, amount, confirmStep.step.title)}
+          onRemove={() => removeStep(confirmStep.stepId)}
+          onClose={() => setConfirmStep(null)}
+        />
       )}
     </>
   );

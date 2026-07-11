@@ -7,6 +7,7 @@
 import { useState, useMemo } from 'react';
 import { DAYS } from '../data/tripData';
 import DayCard from './DayCard';
+import SectionHeader from './SectionHeader';
 
 const CITIES = ['All', ...new Set(DAYS.map((d) => d.city))];
 
@@ -21,19 +22,21 @@ export default function DaysSection({ optionValues, onOpenDay }) {
   return (
     <section id="days" className="py-20 bg-surface-card/20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-3">Tap any day</p>
-        <h2 className="font-display text-4xl sm:text-5xl font-extrabold mb-2">14 DAYS</h2>
-        <p className="text-white/40 text-sm mb-8">Step-by-step schedule · photos · videos · booking links</p>
+        <SectionHeader
+          eyebrow="Day by day"
+          title={`${DAYS.length} days in Malaysia`}
+          subtitle="Tap any day for the full schedule, photos, costs and booking links."
+        />
 
         <div className="flex flex-wrap gap-2 mb-8">
           {CITIES.map((city) => (
             <button
               key={city}
               onClick={() => setFilter(city)}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
                 filter === city
-                  ? 'bg-brand-red text-white'
-                  : 'bg-surface-elevated border border-surface-border text-white/60 hover:text-white'
+                  ? 'bg-brand-red text-white shadow-cta'
+                  : 'bg-surface-elevated border border-surface-border text-white/60 hover:text-white hover:border-white/20'
               }`}
             >
               {city}

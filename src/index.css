@@ -15,7 +15,7 @@
  * Theme tokens live in tailwind.config.js — change colours there, not here.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -25,11 +25,11 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    background: #06090F;
+    background: #0B0E13;
   }
 
   body {
-    background: #06090F;
+    background: #0B0E13;
     color: white;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -37,15 +37,15 @@
 
   /* Text selection */
   ::selection {
-    background: rgba(37, 99, 235, 0.35);
+    background: rgba(45, 212, 191, 0.30);
     color: white;
   }
 
   /* Scrollbar */
   ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: #06090F; }
-  ::-webkit-scrollbar-thumb { background: #1A2740; border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: #2563EB; }
+  ::-webkit-scrollbar-track { background: #0B0E13; }
+  ::-webkit-scrollbar-thumb { background: #242C3A; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #0FA18C; }
 }
 
 /* ─── Utilities ─────────────────────────────────────────────────────────── */
@@ -53,6 +53,11 @@
   /* Base card — use for all content containers */
   .card {
     @apply bg-surface-card border border-surface-border rounded-2xl;
+  }
+
+  /* Card the user can click — subtle lift on hover */
+  .card-interactive {
+    @apply card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lift;
   }
 
   /* Slightly raised surface — use for inputs, nested content inside cards */
@@ -63,13 +68,19 @@
   /* Primary action button — booking, save, confirm */
   .btn-primary {
     @apply bg-brand-red hover:bg-brand-red-dark text-white font-semibold rounded-xl
-           transition-all duration-200 cursor-pointer;
+           transition-all duration-200 cursor-pointer active:scale-[0.98] shadow-cta;
   }
 
   /* Secondary/ghost button — cancel, back, secondary actions */
   .btn-ghost {
     @apply bg-surface-elevated hover:bg-surface-hover border border-surface-border
-           text-white font-medium rounded-xl transition-colors cursor-pointer;
+           text-white font-medium rounded-xl transition-colors cursor-pointer active:scale-[0.98];
+  }
+
+  /* Shared text input styling */
+  .input {
+    @apply bg-surface-bg border border-surface-border rounded-xl text-sm text-white
+           placeholder-white/30 focus:outline-none focus:border-brand-bright/60 transition-colors;
   }
 
   /* Inline label / badge */
@@ -77,16 +88,24 @@
     @apply text-xs font-semibold px-2.5 py-1 rounded-lg;
   }
 
-  /* Hero gradient overlay — radial blue accent from top-left */
-  .hero-gradient {
-    background:
-      radial-gradient(ellipse 80% 60% at 20% -10%, rgba(37, 99, 235, 0.18) 0%, transparent 70%),
-      radial-gradient(ellipse 50% 40% at 80% 110%, rgba(245, 158, 11, 0.08) 0%, transparent 70%);
+  /* Section header pieces — used via SectionHeader component */
+  .section-eyebrow {
+    @apply text-xs font-bold uppercase tracking-[0.2em] text-brand-bright/80;
+  }
+  .section-title {
+    @apply font-display text-3xl sm:text-4xl font-bold tracking-tight;
   }
 
-  /* Subtle top-border accent glow on cards */
+  /* Hero gradient overlay — teal dusk accents */
+  .hero-gradient {
+    background:
+      radial-gradient(ellipse 80% 60% at 20% -10%, rgba(45, 212, 191, 0.14) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 80% 110%, rgba(245, 184, 65, 0.08) 0%, transparent 70%);
+  }
+
+  /* Subtle accent glow on cards */
   .card-glow {
     @apply card;
-    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.12), inset 0 1px 0 rgba(37, 99, 235, 0.1);
+    box-shadow: 0 0 0 1px rgba(45, 212, 191, 0.14), inset 0 1px 0 rgba(45, 212, 191, 0.10);
   }
 }

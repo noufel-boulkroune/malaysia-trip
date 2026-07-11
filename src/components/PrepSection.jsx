@@ -16,6 +16,7 @@
 import { useState } from 'react';
 import { ExternalLink, Bus, CheckCircle2, AlertTriangle, Moon, Backpack, ChevronDown, ChevronUp } from 'lucide-react';
 import { CHECKLIST, PACKING, TRANSPORT, HALAL, WARNINGS } from '../data/tripData';
+import SectionHeader from './SectionHeader';
 
 const CL_KEY      = 'mt-checklist';
 const PACKING_KEY = 'mt-packing';
@@ -106,8 +107,11 @@ export default function PrepSection() {
   return (
     <section id="prep" className="py-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-3">Before you fly</p>
-        <h2 className="font-display text-4xl sm:text-5xl font-extrabold mb-10">PREP</h2>
+        <SectionHeader
+          eyebrow="Before you fly"
+          title="Prep"
+          subtitle="Checklists, packing, halal tips and every transport leg in one place."
+        />
 
         <div className="grid lg:grid-cols-2 gap-5">
 
@@ -194,7 +198,7 @@ export default function PrepSection() {
                       <td className="py-2.5 pr-3 text-white/70 text-xs sm:text-sm">{t.route}</td>
                       <td className="py-2.5 pr-3 text-white/40 text-xs">{t.mode}</td>
                       <td className="py-2.5 pr-3 text-white/40 text-xs">{t.duration}</td>
-                      <td className="py-2.5 text-green-400 font-semibold text-sm">{t.price}</td>
+                      <td className="py-2.5 text-brand-bright font-semibold text-sm font-mono">{t.price}</td>
                     </tr>
                   ))}
                 </tbody>

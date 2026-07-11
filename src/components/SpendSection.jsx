@@ -15,8 +15,9 @@ import { useBudget } from '../hooks/useBudget';
 import { useBookings } from '../hooks/useBookings';
 import { useStepExpenses } from '../hooks/useStepExpenses';
 import { useTripOptions } from '../hooks/useTripOptions';
-import { DAYS, BOOKING_PRESETS, calcDayCost } from '../data/tripData';
-import { calcSpendTotals } from '../utils/spend';
+import { DAYS, calcDayCost } from '../data/tripData';
+import { calcSpendTotals, daySpentFor } from '../utils/spend';
+import SectionHeader from './SectionHeader';
 
 const CATEGORIES = ['Food', 'Transport', 'Activity', 'Accommodation', 'Shopping', 'Other'];
 
@@ -83,22 +84,11 @@ export default function SpendSection() {
     }).sort((a, b) => a.dayNum - b.dayNum),
   [stepExpenses]);
 
-  function daySpentFor(dayNum) {
-    const entriesAmt = entries.filter(e => e.day === dayNum).reduce((s, e) => s + e.amount, 0);
-    const bookingsAmt = Object.entries(bookings)
-      .filter(([id, b]) => b.booked && BOOKING_PRESETS.find(p => p.id === id)?.day === dayNum)
-      .reduce((s, [, b]) => s + (b.paid ?? 0), 0);
-    const stepsAmt = Object.entries(stepExpenses)
-      .filter(([id]) => id.startsWith(`d${dayNum}-`))
-      .reduce((s, [, e]) => s + (e.paid ?? 0), 0);
-    return entriesAmt + bookingsAmt + stepsAmt;
-  }
-
   const dailyChart = useMemo(() => {
     const rows = DAYS.map(d => ({
       day: d.day,
       estimated: calcDayCost(d, tripOptionValues).max,
-      actual: daySpentFor(d.day),
+      actual: daySpentFor(d.day, entries, bookings, stepExpenses),
     }));
     const maxVal = Math.max(...rows.map(r => Math.max(r.estimated, r.actual)), 1);
     return { rows, maxVal };
@@ -123,18 +113,18 @@ export default function SpendSection() {
   return (
     <section id="spend" className="py-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        <div className="mb-10">
-          <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-3">Track it</p>
-          <h2 className="font-display text-4xl sm:text-5xl font-extrabold">SPEND</h2>
-          <p className="text-white/40 text-sm mt-2">Log expenses, watch the trip budget — day-by-day pacing lives in the tracker button below.</p>
-        </div>
+        <SectionHeader
+          eyebrow="Track it"
+          title="Spend"
+          subtitle="Confirm planned expenses from the day pages or the floating tracker — this is the overview."
+        />
 
         {/* Trip budget card */}
         <div className="card-elevated rounded-2xl p-5 space-y-3 mb-6">
           <div className="flex items-center justify-between">
             <span className="text-xs text-white/40 uppercase tracking-wider">Trip budget</span>
             {!editBudget
-              ? <button onClick={() => { setBudgetInput(String(budget)); setEditBudget(true); }} className="text-xs text-brand-red hover:underline">Edit</button>
+              ? <button onClick={() => { setBudgetInput(String(budget)); setEditBudget(true); }} className="text-xs text-brand-bright hover:underline">Edit</button>
               : <div className="flex items-center gap-1.5">
                   <span className="text-xs text-white/40">RM</span>
                   <input autoFocus value={budgetInput} onChange={e => setBudgetInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && saveBudget()} className="w-24 bg-surface-bg border border-surface-border rounded-lg px-2 py-0.5 text-sm text-white focus:outline-none focus:border-brand-red" />
@@ -145,7 +135,7 @@ export default function SpendSection() {
           <p className="text-[11px] text-white/25 -mt-1">
             Estimated trip cost RM{range.min.toLocaleString()}–{range.max.toLocaleString()}
             {override != null && (
-              <button onClick={() => setOverride(null)} className="text-brand-red hover:underline ml-1.5">use estimate</button>
+              <button onClick={() => setOverride(null)} className="text-brand-bright hover:underline ml-1.5">use estimate</button>
             )}
           </p>
           <div className="flex flex-wrap justify-between items-baseline gap-2">
@@ -302,10 +292,10 @@ export default function SpendSection() {
         {stepEntries.length > 0 && (
           <div className="space-y-2">
             <p className="text-xs text-white/30 uppercase tracking-wider">Logged from itinerary</p>
-            {stepEntries.map(({ id, dayNum, dayTheme, paid, date }) => (
+            {stepEntries.map(({ id, dayNum, dayTheme, title, paid, date }) => (
               <div key={id} className="flex items-center gap-3 bg-surface-elevated border border-surface-border rounded-xl px-3 py-2.5">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{dayTheme || `Day ${dayNum}`}</p>
+                  <p className="text-sm font-medium truncate">{title || dayTheme || `Day ${dayNum}`}</p>
                   <div className="flex gap-2 mt-0.5">
                     <span className="text-xs px-1.5 py-0.5 rounded border bg-purple-500/15 text-purple-300 border-purple-500/20">Activity</span>
                     <span className="text-xs text-white/30">Day {dayNum} · {date}</span>

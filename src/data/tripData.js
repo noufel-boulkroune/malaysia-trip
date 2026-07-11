@@ -1,8 +1,10 @@
 const img = (id, w = 1200) =>
   `https://images.unsplash.com/photo-${id}?w=${w}&q=85&auto=format&fit=crop`;
 
+// width=800 keeps Wikimedia serving resized thumbs — larger values can
+// redirect to the multi-MB original file and stall page load.
 const fp = (name) =>
-  `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(name)}?width=1200`;
+  `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(name)}?width=800`;
 
 const W = {
   petronas: fp('Petronas_Towers_at_Night_-_from_the_base_upwards.jpg'),
@@ -19,6 +21,15 @@ const W = {
   kilim: fp('Kilim_Geoforest_Park,_Langkawi.jpg'),
   mossyForest: fp('Gunung_Irau_(The_Mossy_Forest)_(26119232711).jpg'),
 };
+
+// Single source of truth for currency conversion — every component that
+// shows EUR must import this (do NOT redefine a local rate).
+export const EUR_RATE = 4.66; // 1 € ≈ 4.66 MYR
+
+// Two travelers, twin-share. Every "pp" cost for a shared ride/room/scooter
+// is the per-car (or per-room) price ÷ 2. If the group size changes, every
+// hand-written shared cost below must be re-derived.
+export const GROUP_SIZE = 2;
 
 export const TRIP_META = {
   title: 'Malaysia Trip Guide',
@@ -65,8 +76,8 @@ export const OPTIONS = {
     day: 13,
     choices: [
       { id: 'freeTime', label: 'Free time / rest', cost: 0, desc: 'No extra activity — pool, nap, or last-minute shopping' },
-      { id: 'zooNegara', label: 'Zoo Negara (Giant Pandas)', cost: 88, desc: 'RM88 pp · Xing Xing & Liang Liang, Malaysia\'s only giant pandas', book: 'https://ticket.zoonegara.my' },
-      { id: 'sunwayLagoon', label: 'Sunway Lagoon', cost: 280, desc: 'RM263–268 foreigner + Grab · 6 zones: water, amusement, wildlife, extreme, scream, lost lagoon · Full day — pairs less well with the 04:30 Broga wake-up', book: 'https://sunwaylagoon.com/etickets/' },
+      { id: 'zooNegara', label: 'Zoo Negara (Giant Pandas)', cost: 118, desc: 'RM88 ticket + ~RM30 pp Grab return (RM50–70/car, split by 2) · Xing Xing & Liang Liang, Malaysia\'s only giant pandas', book: 'https://ticket.zoonegara.my' },
+      { id: 'sunwayLagoon', label: 'Sunway Lagoon', cost: 300, desc: 'RM263–268 ticket + ~RM30 pp Grab return · 6 zones: water, amusement, wildlife, extreme, scream, lost lagoon · Full day — pairs less well with the 04:30 Broga wake-up', book: 'https://sunwaylagoon.com/etickets/' },
     ],
   },
   langkawiActivity: {
@@ -84,7 +95,7 @@ export const OPTIONS = {
     label: 'Langkawi splurge (Day 10 night)',
     day: 10,
     choices: [
-      { id: 'guesthouse', label: 'Guesthouse all 4 nights', cost: 0, desc: 'RM60–90 pp/night · Budget twin-share' },
+      { id: 'guesthouse', label: 'Guesthouse all 5 nights', cost: 0, desc: 'RM60–90 pp/night · Budget twin-share' },
       { id: 'poolPass', label: 'Guesthouse + pool day-pass', cost: 50, desc: 'RM30–80 pp · Call resort ahead' },
       { id: 'splurge', label: '1 sea-view resort night', cost: 225, desc: 'RM175–275 pp · Bayou / PARKROYAL / Casa del Mar', book: 'https://www.booking.com/searchresults.html?ss=Pantai+Cenang+Langkawi' },
     ],
@@ -94,6 +105,7 @@ export const OPTIONS = {
 // All amounts in MYR, per person (twin-share room cost ÷2)
 export const BUDGET = [
   { category: 'Accommodation (13 nights)', min: 545, max: 830, note: 'Budget twin-share ÷2 pp · 5 KL nights + 3 Penang + 5 Langkawi' },
+  { category: 'Tourism tax (foreigners)', min: 65, max: 65, note: 'RM10 per room per night × 13 nights ÷ 2 — often collected at check-in, not in the booking price' },
   { category: 'Transport', min: 345, max: 440, note: 'Buses, ferries, ETS train, cable car, Grab' },
   { category: 'Food & drink', min: 600, max: 700, note: '~50 MYR/day, hawker-heavy, halal-checked' },
   { category: 'Snacks, drinks & extras', min: 280, max: 420, note: '~RM20–30/day — cendol, bubble tea, roadside snacks, fresh juice, trying everything' },
@@ -101,7 +113,7 @@ export const BUDGET = [
   { category: 'Souvenirs & duty-free', min: 100, max: 200, note: 'Optional — Langkawi is duty-free' },
   { category: 'Misc (SIM, laundry, tips)', min: 80, max: 120, note: 'MDAC is free; SIM ~RM40' },
   { category: 'Hidden & unexpected costs', min: 150, max: 250, note: 'Surge-priced Grabs, pay toilets, pharmacy, forgotten items, price creep' },
-  { category: 'CORE TOTAL', min: 3020, max: 4230, note: '≈ 648–908 € per person (1€ = 4.66 MYR)', highlight: true },
+  { category: 'CORE TOTAL', min: 3085, max: 4295, note: '≈ 662–922 € per person (1€ = 4.66 MYR)', highlight: true },
   { category: 'Suggested buffer', min: 400, max: 500, note: 'Upgrades, extras, bad-weather plan B' },
 ];
 
@@ -255,16 +267,19 @@ export const HOTELS = [
   },
 ];
 
+// Prices: buses / ferries / trains are per person; Grab prices are per CAR
+// (split by 2 for the pp figure used in day steps).
 export const TRANSPORT = [
-  { route: 'KLIA → Bukit Bintang', mode: 'Grab XL', duration: '45–60 min', price: 'RM18–25' },
-  { route: 'KL → Penang', mode: 'Bus (TBS)', duration: '~5h', price: 'RM45–90' },
-  { route: 'Penang → Langkawi', mode: 'Ferry', duration: '~2.5h', price: 'RM70–90' },
-  { route: 'Langkawi → Kuala Kedah', mode: 'Ferry', duration: '~1h45m', price: 'RM35–40' },
-  { route: 'Kuala Kedah → Alor Setar', mode: 'Grab', duration: '~20 min', price: 'RM12–18' },
-  { route: 'Alor Setar → KL Sentral', mode: 'ETS Train (KTMB)', duration: '~4h30m', price: 'RM50–79' },
-  { route: 'KL Sentral ↔ Genting', mode: 'Bus + SkyWay', duration: '~1h10m', price: 'RM18–24' },
-  { route: 'KL ↔ Broga Hill (return)', mode: 'Grab / private transfer', duration: '~40 min each way', price: 'RM40–60' },
-  { route: 'KL ↔ Zoo Negara (return)', mode: 'Grab', duration: '~25–30 min each way', price: 'RM50–70' },
+  { route: 'KLIA → Bukit Bintang', mode: 'Grab', duration: '45–60 min', price: 'RM70–110 / car' },
+  { route: 'KL → Penang', mode: 'Bus (TBS)', duration: '~5h', price: 'RM45–90 pp' },
+  { route: 'Penang → Langkawi', mode: 'Ferry', duration: '~2.5h', price: 'RM70–90 pp' },
+  { route: 'Pantai Cenang → Kuah Jetty', mode: 'Grab', duration: '~30 min', price: 'RM25–35 / car' },
+  { route: 'Langkawi → Kuala Kedah', mode: 'Ferry', duration: '~1h45m', price: 'RM35–40 pp' },
+  { route: 'Kuala Kedah → Alor Setar', mode: 'Grab', duration: '~20 min', price: 'RM12–18 / car' },
+  { route: 'Alor Setar → KL Sentral', mode: 'ETS Train (KTMB)', duration: '~4h30m', price: 'RM50–79 pp' },
+  { route: 'KL Sentral ↔ Genting (return)', mode: 'Bus + SkyWay', duration: '~1h10m each way', price: 'RM20–40 bus + RM22 SkyWay pp' },
+  { route: 'KL ↔ Broga Hill', mode: 'Grab / private driver', duration: '~40 min each way', price: 'RM60–100 / car each way' },
+  { route: 'KL ↔ Zoo Negara (return)', mode: 'Grab', duration: '~25–30 min each way', price: 'RM50–70 / car return' },
 ];
 
 export const CHECKLIST = [
@@ -362,8 +377,9 @@ export const DAYS = [
     video: { title: 'Kuala Lumpur travel guide 2024' },
     stay: 'Bukit Bintang guesthouse (twin-share)',
     steps: [
-      { time: '14:15', title: 'Land at KLIA', desc: 'Immigration, baggage, scan MDAC QR. Get Celcom/Digi/Maxis SIM (~RM30–40).' },
-      { time: '15:15', title: 'Grab XL → Bukit Bintang', desc: '45–60 min. Split Grab XL between the squad — cheaper & stay together.', cost: 'RM70–110 total', tip: 'Request ride inside arrivals for better GPS pin' },
+      { time: '14:15', title: 'Land at KLIA', desc: 'Immigration, baggage, scan MDAC QR.' },
+      { time: '14:45', title: 'SIM/eSIM + ATM cash', desc: 'Celcom/Maxis counter in arrivals: ~RM30–50 for 15GB. Withdraw MYR at the ATM — foreign cards pay ~RM10–12 fee per withdrawal, so take out a big chunk once.', cost: 'RM40–60 pp' },
+      { time: '15:15', title: 'Grab → Bukit Bintang', desc: '45–60 min. RM70–110 per car, split by 2.', cost: 'RM35–55 pp', tip: 'Request ride inside arrivals for better GPS pin' },
       { time: '16:30', title: 'Check in Bukit Bintang', desc: 'Walkable to Jalan Alor, malls, monorail. Drop bags, freshen up.', images: [W.klSkyline] },
       { time: '19:30', title: 'Dinner: Jalan Alor', desc: 'Satay, char kway teow. Most stalls Malay/halal-run — check signage.', cost: 'RM25–35 pp', halal: true, images: [W.jalanAlor], mapsUrl: 'https://maps.google.com/?q=Jalan+Alor+Kuala+Lumpur' },
       { time: '21:30', title: 'KLCC Park evening stroll', desc: 'Free warm-up view of Petronas Towers lit up. Tomorrow you go inside.', images: [W.petronas], mapsUrl: 'https://maps.google.com/?q=KLCC+Park+Kuala+Lumpur' },
@@ -386,11 +402,11 @@ export const DAYS = [
     stay: 'Bukit Bintang',
     steps: [
       { time: '08:00', title: 'Roti canai breakfast', desc: 'Local kopitiam — roti canai & teh tarik.', cost: 'RM10–15 pp' },
-      { time: '09:30', title: 'Batu Caves Malaysia', desc: 'Grab return ~25 min each way. Free entry, 272 rainbow steps, giant golden Murugan statue. Dress modestly — sarongs free at entrance.', cost: 'RM15–20 pp Grab', images: [W.batuCaves], tip: 'Go early to beat heat & crowds', mapsUrl: 'https://maps.google.com/?q=Batu+Caves+Kuala+Lumpur+Malaysia' },
+      { time: '09:30', title: 'Batu Caves Malaysia', desc: 'Grab return ~25 min each way (RM40–60 per car return, split by 2). Free entry, 272 rainbow steps, giant golden Murugan statue. Dress modestly — sarongs free at entrance.', cost: 'RM20–30 pp Grab', images: [W.batuCaves], tip: 'Go early to beat heat & crowds', mapsUrl: 'https://maps.google.com/?q=Batu+Caves+Kuala+Lumpur+Malaysia' },
       { time: '12:30', title: 'Lunch — Suria KLCC food court', desc: '20+ halal options in AC comfort.', cost: 'RM20–25 pp', halal: true },
-      { time: '14:00', title: 'Grab → Masjid Negara (National Mosque)', desc: 'Near KL Sentral / Lake Gardens, ~15–20 min.', cost: 'RM10–15 pp', mapsUrl: 'https://maps.google.com/?q=Masjid+Negara+Kuala+Lumpur' },
+      { time: '14:00', title: 'Grab → Masjid Negara (National Mosque)', desc: 'Near KL Sentral / Lake Gardens, ~15–20 min. RM12–18 per car, split by 2.', cost: 'RM6–9 pp', mapsUrl: 'https://maps.google.com/?q=Masjid+Negara+Kuala+Lumpur' },
       { time: '14:30', title: 'National Mosque + Islamic Arts Museum Malaysia', desc: 'Free mosque visit, then the world\'s largest Islamic art museum right next door — calligraphy, textiles, architecture models. ~2h.', cost: 'RM14 pp museum', images: [W.klSkyline], mapsUrl: 'https://maps.google.com/?q=Islamic+Arts+Museum+Malaysia' },
-      { time: '17:00', title: 'Grab → KLCC', cost: 'RM10–15 pp' },
+      { time: '17:00', title: 'Grab → KLCC', desc: 'RM12–18 per car, split by 2.', cost: 'RM6–9 pp' },
       { time: '18:45', title: 'Petronas Twin Towers — EVENING SLOT', desc: 'Book ~7:00–7:15pm. Skybridge in daylight + Observation Deck (L86) at sunset. Smart-casual dress code enforced.', cost: 'RM150–160 pp', book: 'https://eticket.petronastwintowers.com.my', images: [W.petronas], tip: 'Book 3–5 days ahead — evening slots sell out', mapsUrl: 'https://maps.google.com/?q=Petronas+Twin+Towers+Kuala+Lumpur' },
       { time: '20:30', title: 'Dinner Bukit Bintang', desc: 'Back near hotel — Chinatown or Jalan Alor.', cost: 'RM25–35 pp' },
     ],
@@ -412,14 +428,14 @@ export const DAYS = [
     stay: 'Bukit Bintang (last KL night)',
     hasOptions: ['gentingAddon'],
     steps: [
-      { time: '08:00', title: 'KL Sentral — buy Go Genting return', desc: 'Level 2 or basement bus terminal. Buy bus + cable car combo if available.', book: 'https://www.redbus.my', mapsUrl: 'https://maps.google.com/?q=KL+Sentral+Kuala+Lumpur' },
+      { time: '08:00', title: 'Monorail/Grab → KL Sentral, buy Go Genting return', desc: 'Level 2 or basement bus terminal. Buy bus + cable car combo if available.', cost: 'RM4–10 pp', book: 'https://www.redbus.my', mapsUrl: 'https://maps.google.com/?q=KL+Sentral+Kuala+Lumpur' },
       { time: '09:00', title: 'Bus → Awana Station', desc: '~1 hour climb into the clouds.', cost: 'RM10–20 pp' },
       { time: '10:15', title: 'Awana SkyWay cable car', desc: '2.8 km, ~10 min. Stop at Chin Swee Station — giant Buddha & temple, 30–45 min.', cost: 'RM22 pp return', book: 'https://www.rwgenting.com', images: [W.genting], mapsUrl: 'https://maps.google.com/?q=Awana+SkyWay+Genting+Highlands+Malaysia' },
       { time: '11:00', title: 'Chin Swee Temple', desc: 'Dramatic cliffside temple with panoramic views. Worth 30–45 min.', images: [W.mossyForest], mapsUrl: 'https://maps.google.com/?q=Chin+Swee+Caves+Temple+Genting+Malaysia' },
       { time: '12:00', title: 'Lunch SkyAvenue', desc: 'Peak mall — halal food court & restaurants.', cost: 'RM20–30 pp', halal: true },
       { time: '13:30', title: 'Explore the peak', desc: 'SkyAvenue, casino atrium exterior, First World Plaza viewpoints. Free to wander.', images: [W.genting] },
       { time: '14:30', title: 'Optional theme park', desc: 'Pick in Options panel: free explore · Skytropolis indoor (RM80) · SkyWorlds outdoor (RM168).', optional: true },
-      { time: '18:00', title: 'Bus back to KL Sentral', desc: '~1 hour descent.' },
+      { time: '18:00', title: 'Bus back to KL Sentral', desc: '~1 hour descent. Return leg (skip this cost if you bought a return combo in the morning).', cost: 'RM10–20 pp' },
       { time: '20:00', title: 'Dinner Bukit Bintang', cost: 'RM25–35 pp' },
     ],
   },
@@ -439,9 +455,9 @@ export const DAYS = [
     video: { title: 'George Town Penang Malaysia travel guide 2024' },
     stay: 'George Town — Chulia St / Love Lane',
     steps: [
-      { time: '08:30', title: 'Check out & breakfast', desc: 'Pack. Store bags at guesthouse if needed.' },
+      { time: '08:30', title: 'Check out & breakfast', desc: 'Roti canai + teh tarik before the bus. Pack; store bags at guesthouse if needed.', cost: 'RM10–15 pp' },
       { time: '09:30', title: 'Merdeka Square (optional)', desc: '20 min photo stop if you have time.', images: [W.klSkyline] },
-      { time: '10:00', title: 'Grab → TBS Terminal', cost: 'RM15 pp', mapsUrl: 'https://maps.google.com/?q=Terminal+Bersepadu+Selatan+Kuala+Lumpur' },
+      { time: '10:00', title: 'Grab → TBS Terminal', desc: 'RM15–20 per car, split by 2.', cost: 'RM8–10 pp', mapsUrl: 'https://maps.google.com/?q=Terminal+Bersepadu+Selatan+Kuala+Lumpur' },
       { time: '11:00', title: 'Bus KL → Penang', desc: 'Transnasional/Plusliner ~5h direct.', cost: 'RM45–90 pp', book: 'https://www.easybook.com', tip: 'Book seat ahead for July peak' },
       { time: '17:00', title: 'Check in George Town', desc: 'Chulia Street / Love Lane — walk everywhere.', images: [W.georgeTown], mapsUrl: 'https://maps.google.com/?q=George+Town+Penang+Malaysia' },
       { time: '19:00', title: 'Heritage walk + halal dinner', desc: 'Malay/Indian-Muslim stalls on Chulia St.', cost: 'RM20–30 pp', halal: true, images: [W.penangArt] },
@@ -466,8 +482,10 @@ export const DAYS = [
       { time: '09:00', title: 'Street art self-guided walk', desc: 'Armenian St, Cannon St, Muntri St — hunt murals at easy pace, 2–3h.', images: [W.penangArt, W.georgeTown], mapsUrl: 'https://maps.google.com/?q=Armenian+Street+George+Town+Penang' },
       { time: '11:15', title: 'Kapitan Keling Mosque + Pinang Peranakan Mansion', desc: 'Historic Indian-Muslim mosque (free, modest dress) right by an ornate 19th-century Peranakan mansion museum — both an easy walk from the mural trail.', cost: 'RM20 pp museum', mapsUrl: 'https://maps.google.com/?q=Kapitan+Keling+Mosque+Penang' },
       { time: '12:00', title: 'Line Clear Nasi Kandar', desc: 'Halal institution, open 24/7.', cost: 'RM15–20 pp', halal: true, mapsUrl: 'https://maps.google.com/?q=Line+Clear+Nasi+Kandar+Penang' },
+      { time: '13:30', title: 'Grab → Penang Hill', desc: '~25 min from George Town to the funicular base station.', cost: 'RM8–12 pp', mapsUrl: 'https://maps.google.com/?q=Penang+Hill+Funicular+Malaysia' },
       { time: '14:00', title: 'Penang Hill funicular', desc: 'Cooler air & panoramic views. Foreigner return ~RM30–35.', cost: 'RM30–35 pp', book: 'https://www.penanghill.gov.my', images: [W.georgeTown], mapsUrl: 'https://maps.google.com/?q=Penang+Hill+Funicular+Malaysia' },
-      { time: '16:30', title: 'Kek Lok Si Temple', desc: 'Malaysia\'s largest Buddhist complex. Free entry; small lift fee to pagoda.', images: [W.georgeTown], mapsUrl: 'https://maps.google.com/?q=Kek+Lok+Si+Temple+Penang+Malaysia' },
+      { time: '16:30', title: 'Kek Lok Si Temple', desc: 'Malaysia\'s largest Buddhist complex, 10 min from the hill. Free entry; small lift fee to pagoda.', cost: 'RM3–5 pp', images: [W.georgeTown], mapsUrl: 'https://maps.google.com/?q=Kek+Lok+Si+Temple+Penang+Malaysia' },
+      { time: '18:15', title: 'Grab back to George Town', desc: '~25 min back to Chulia St.', cost: 'RM8–12 pp' },
       { time: '19:00', title: 'Dinner — Kapitan Keling / Chulia St', cost: 'RM20–30 pp', halal: true },
     ],
   },
@@ -487,12 +505,12 @@ export const DAYS = [
     video: { title: 'ESCAPE Penang adventure water park Malaysia review 2024' },
     stay: 'George Town',
     steps: [
-      { time: '07:30', title: 'Grab → Penang National Park HQ', desc: 'Teluk Bahang, ~45 min from George Town.', cost: 'RM10–15 pp', mapsUrl: 'https://maps.google.com/?q=Penang+National+Park+Teluk+Bahang+Malaysia' },
+      { time: '07:30', title: 'Grab → Penang National Park HQ', desc: 'Teluk Bahang, ~45 min from George Town. RM25–40 per car, split by 2.', cost: 'RM13–20 pp', mapsUrl: 'https://maps.google.com/?q=Penang+National+Park+Teluk+Bahang+Malaysia' },
       { time: '08:30', title: 'Boat to Monkey Beach', desc: 'RM100 return per boat (8–10 pax). Macaques, swim, optional lighthouse hike. 2.5–3h total.', cost: 'RM12–25 pp', images: [W.monkeyBeach], tip: 'Don\'t leave bags unattended — monkeys steal phones', mapsUrl: 'https://maps.google.com/?q=Monkey+Beach+Penang+Malaysia' },
-      { time: '11:30', title: 'Grab → ESCAPE Penang', desc: 'Same Teluk Bahang area, 5–10 min.', cost: 'RM10–15 pp' },
+      { time: '11:30', title: 'Grab → ESCAPE Penang', desc: 'Same Teluk Bahang area, 5–10 min. RM8–12 per car, split by 2.', cost: 'RM4–6 pp' },
       { time: '12:00', title: 'Lunch at ESCAPE café', cost: 'RM20–25 pp', halal: true },
       { time: '13:00', title: 'ESCAPE Penang — full day pass', desc: 'Ziplines, rope courses, world-record tube slide, Dead Sea pool. Bring swimwear. 4–5h.', cost: 'RM182–190 pp', book: 'https://escape.my/pg/buy-tickets', mapsUrl: 'https://maps.google.com/?q=ESCAPE+Penang+Teluk+Bahang+Malaysia' },
-      { time: '18:30', title: 'Grab back to George Town', cost: 'RM15 pp' },
+      { time: '18:30', title: 'Grab back to George Town', desc: 'RM25–40 per car, split by 2.', cost: 'RM13–20 pp' },
       { time: '20:00', title: 'Dinner', cost: 'RM25–30 pp' },
     ],
   },
@@ -512,10 +530,10 @@ export const DAYS = [
     video: { title: 'Langkawi Malaysia island guide 2024' },
     stay: 'Pantai Cenang guesthouse',
     steps: [
-      { time: '06:30', title: 'Grab → Swettenham Pier', cost: 'RM10–15 pp', mapsUrl: 'https://maps.google.com/?q=Swettenham+Pier+Penang+Malaysia' },
+      { time: '06:30', title: 'Grab → Swettenham Pier', desc: 'RM10–15 per car, split by 2.', cost: 'RM5–8 pp', mapsUrl: 'https://maps.google.com/?q=Swettenham+Pier+Penang+Malaysia' },
       { time: '07:30', title: 'Ferry to Langkawi', desc: 'Scenic ~2.5h crossing. Peak season — book 1–2 days ahead.', cost: 'RM70–90 pp', book: 'https://www.traveloka.com', images: [W.pantaiCenang] },
-      { time: '10:30', title: 'Kuah → Pantai Cenang', desc: 'Grab or shuttle ~40 min, check in.', cost: 'RM20–30 pp', mapsUrl: 'https://maps.google.com/?q=Pantai+Cenang+Langkawi+Malaysia' },
-      { time: '12:30', title: 'Rent scooters or car', desc: 'Left-hand drive, easy roads. 2 per scooter or split car.', cost: 'RM40–50 pp/day', tip: 'Wear helmet; IDP technically required' },
+      { time: '10:30', title: 'Kuah → Pantai Cenang', desc: 'Grab or taxi ~40 min, check in. RM30–45 per car, split by 2.', cost: 'RM15–25 pp', mapsUrl: 'https://maps.google.com/?q=Pantai+Cenang+Langkawi+Malaysia' },
+      { time: '12:30', title: 'Rent a scooter (2-up) or small car', desc: 'Left-hand drive, easy roads. One scooter RM40–60/day + petrol, split by 2.', cost: 'RM25–40 pp/day', tip: 'Wear helmet; IDP technically required' },
       { time: '13:30', title: 'Lunch + Pantai Cenang swim', cost: 'RM20–25 pp', images: [W.pantaiCenang] },
       { time: '19:00', title: 'Beachfront halal seafood', cost: 'RM25–35 pp', halal: true },
     ],
@@ -536,7 +554,7 @@ export const DAYS = [
     video: { title: 'Langkawi SkyCab Sky Bridge Malaysia experience 2024' },
     stay: 'Pantai Cenang',
     steps: [
-      { time: '08:30', title: 'Drive to Oriental Village', desc: 'Burau Bay, ~20 min. Go early — beat tour buses.', images: [W.orientalVillage], mapsUrl: 'https://maps.google.com/?q=Oriental+Village+Langkawi+Malaysia' },
+      { time: '08:30', title: 'Drive to Oriental Village', desc: 'Burau Bay, ~20 min. Go early — beat tour buses. Cost is the day\'s scooter/car share + petrol.', cost: 'RM25–40 pp', images: [W.orientalVillage], mapsUrl: 'https://maps.google.com/?q=Oriental+Village+Langkawi+Malaysia' },
       { time: '09:30', title: 'SkyCab + SkyGlide + SkyBridge', desc: 'RM97 adult foreigner — all three included. Open 9:30am–6pm.', cost: 'RM97 pp', book: 'https://www.panoramalangkawi.com', images: [W.skyCab, W.orientalVillage] },
       { time: '12:30', title: 'Lunch near base station', cost: 'RM20–25 pp' },
       { time: '14:00', title: 'Relax / pool afternoon', desc: 'Back at Pantai Cenang — chill day by design.', images: [W.pantaiCenang] },
@@ -558,7 +576,7 @@ export const DAYS = [
     video: { title: 'Kilim Geoforest Park mangrove kayak Langkawi Malaysia' },
     stay: 'Pantai Cenang',
     steps: [
-      { time: '08:00', title: 'Drive to Kilim Jetty', desc: '~30 min from Pantai Cenang.', mapsUrl: 'https://maps.google.com/?q=Kilim+Jetty+Langkawi+Malaysia' },
+      { time: '08:00', title: 'Drive to Kilim Jetty', desc: '~30 min from Pantai Cenang. Cost is the day\'s scooter/car share + petrol.', cost: 'RM25–40 pp', mapsUrl: 'https://maps.google.com/?q=Kilim+Jetty+Langkawi+Malaysia' },
       { time: '08:30', title: 'Mangrove kayak', desc: 'RM160–250 per kayak (1–2 pax). Paddle calm channels at your pace.', cost: 'RM80–125 pp', book: 'https://langkawigotours.com/mangrove-kayaking-tour-langkawi', images: [W.kilim] },
       { time: '10:30', title: 'Kilim boat tour', desc: 'Eagles, limestone cliffs, bat cave, floating fish farm.', cost: 'RM80 pp', book: 'https://langkawigotours.com/mangrove-kayaking-tour-langkawi', images: [W.kilim] },
       { time: '13:00', title: 'Lunch — floating restaurant', cost: 'RM20–25 pp' },
@@ -583,6 +601,7 @@ export const DAYS = [
     stay: 'Splurge night OR guesthouse + pool pass',
     hasOptions: ['langkawiActivity', 'langkawiStay'],
     steps: [
+      { time: '08:30', title: 'Scooter day rate + petrol', desc: 'You still have the scooters/car today — daily rate shared 2-up.', cost: 'RM25–40 pp' },
       { time: '09:00', title: 'Morning water activity', desc: 'Choose in Options: island hopping OR jet ski OR both.', optional: true, images: [W.pantaiCenang] },
       { time: 'Afternoon', title: 'Sea-view pool / resort', desc: 'Splurge hotel night or day-pass — see Options.', optional: true, images: [W.pantaiCenang] },
       { time: '18:00', title: 'Duty-free run', desc: 'Kedai Khas — chocolate, cosmetics.', cost: 'RM50–100 pp' },
@@ -605,6 +624,7 @@ export const DAYS = [
     stay: 'Pantai Cenang',
     hasOptions: ['langkawiExtraDay'],
     steps: [
+      { time: 'Morning', title: 'Scooter day rate + petrol', desc: 'Last full scooter day — return them tomorrow at checkout.', cost: 'RM25–40 pp' },
       { time: 'All day', title: 'Rest day or add-on adventure', desc: 'Pick in Options: full rest day (beach/pool, no plan) · Skytrex Adventure treetop course · ATV jungle tour.', optional: true, images: [W.pantaiCenang] },
       { time: '19:30', title: 'Beachfront dinner', cost: 'RM25–35 pp', halal: true },
     ],
@@ -625,11 +645,12 @@ export const DAYS = [
     video: { title: 'KTM ETS train Alor Setar to Kuala Lumpur travel guide' },
     stay: 'Bukit Bintang guesthouse',
     steps: [
-      { time: '07:00', title: 'Return scooter, checkout', desc: 'Last coffee and a quick Pantai Cenang dip. No rush.', images: [W.pantaiCenang] },
-      { time: '08:00', title: 'Ferry Langkawi → Kuala Kedah', desc: 'Scenic ~1h45m crossing back to the mainland.', cost: 'RM35–40 pp', book: 'https://www.traveloka.com' },
-      { time: '10:00', title: 'Grab → Alor Setar station', desc: '~20 min through Kedah paddy fields.', cost: 'RM12–18 pp', mapsUrl: 'https://maps.google.com/?q=Alor+Setar+ETS+Station+Malaysia' },
-      { time: '11:00', title: 'ETS train Alor Setar → KL Sentral', desc: 'Modern AC electric train, ~4h30m. Way more comfortable than a bus — reserved seats, food car, chill window seat.', cost: 'RM50–79 pp', book: 'https://online.ktmb.com.my', tip: 'Book 30 days ahead — sells out in July' },
-      { time: '16:00', title: 'Grab → Bukit Bintang', desc: 'Drop bags, freshen up.', cost: 'RM15–20 pp' },
+      { time: '06:45', title: 'Return scooter, checkout', desc: 'Early start — grab a takeaway coffee, the ferry won\'t wait.', cost: 'RM5–10 pp', images: [W.pantaiCenang] },
+      { time: '07:15', title: 'Grab → Kuah Jetty', desc: '~30 min across the island from Pantai Cenang. RM25–35 per car, split by 2. Leave buffer.', cost: 'RM13–18 pp', mapsUrl: 'https://maps.google.com/?q=Kuah+Jetty+Langkawi+Malaysia' },
+      { time: '08:30', title: 'Ferry Langkawi → Kuala Kedah', desc: 'Scenic ~1h45m crossing back to the mainland — arrives ~10:15.', cost: 'RM35–40 pp', book: 'https://www.traveloka.com' },
+      { time: '10:30', title: 'Grab → Alor Setar station', desc: '~20 min through Kedah paddy fields. RM12–18 per car, split by 2.', cost: 'RM6–9 pp', mapsUrl: 'https://maps.google.com/?q=Alor+Setar+ETS+Station+Malaysia' },
+      { time: '12:00', title: 'ETS train Alor Setar → KL Sentral', desc: 'Modern AC electric train, ~4h30m. Way more comfortable than a bus — reserved seats, food car, chill window seat.', cost: 'RM50–79 pp', book: 'https://online.ktmb.com.my', tip: 'Book 30 days ahead — sells out in July; pick a departure ~1.5h after ferry arrival' },
+      { time: '17:00', title: 'Grab → Bukit Bintang', desc: 'Drop bags, freshen up. RM12–18 per car, split by 2.', cost: 'RM6–9 pp' },
       { time: '19:00', title: 'Petaling Street / Chinatown wander', desc: 'Red lanterns, night stalls, easy pace — no plan needed.', images: [W.jalanAlor], mapsUrl: 'https://maps.google.com/?q=Petaling+Street+Kuala+Lumpur' },
       { time: '20:30', title: 'Dinner — Chinatown or Jalan Alor', cost: 'RM25–35 pp', halal: true },
     ],
@@ -651,11 +672,11 @@ export const DAYS = [
     stay: 'Bukit Bintang — last night',
     hasOptions: ['finalDayActivity'],
     steps: [
-      { time: '04:30', title: 'Grab / private driver → Broga Hill', desc: '~40 min from KL. Book a driver the night before — no public transport at 4:30am.', cost: 'RM40–60 pp (shared)', tip: 'Line up the driver via WhatsApp the evening before' },
+      { time: '04:30', title: 'Grab / private driver → Broga Hill', desc: '~40 min from KL. RM60–100 per car each way, split by 2. Book a driver the night before — no public transport at 4:30am.', cost: 'RM30–50 pp', tip: 'Line up the driver via WhatsApp the evening before' },
       { time: '05:30', title: 'Hike to summit', desc: '1.7 km, easy-moderate, ropes on the steep sections, ~30–45 min. No hiking experience needed.', images: [W.mossyForest] },
       { time: '07:00', title: 'Sunrise at the peak', desc: 'Rolling green hills over Selangor & Negeri Sembilan — one of the most photographed sunrise spots near KL.' },
-      { time: '08:30', title: 'Grab back to Bukit Bintang', cost: 'RM40–60 pp (shared)' },
-      { time: '11:00', title: 'Late brunch', desc: 'Shower off, refuel before the afternoon pick.' },
+      { time: '08:30', title: 'Grab back to Bukit Bintang', desc: 'RM60–100 per car, split by 2.', cost: 'RM30–50 pp' },
+      { time: '11:00', title: 'Late brunch', desc: 'Shower off, refuel before the afternoon pick.', cost: 'RM15–25 pp' },
       { time: '13:00', title: 'Afternoon pick', desc: 'Choose in Options: free time/rest · Zoo Negara + Giant Panda Centre (RM88, Xing Xing & Liang Liang) · Sunway Lagoon full day (RM263–268, 6 zones — heavier after a 4:30am start, budget-dependent).', optional: true, images: [W.klSkyline] },
       { time: '19:00', title: 'Final squad dinner — Jalan Alor', cost: 'RM30–35 pp', halal: true, images: [W.jalanAlor], mapsUrl: 'https://maps.google.com/?q=Jalan+Alor+Kuala+Lumpur+Malaysia' },
       { time: '21:00', title: 'Pack properly', desc: 'Fit duty-free carefully. Check flight times.' },
@@ -677,7 +698,7 @@ export const DAYS = [
     stay: '—',
     steps: [
       { time: 'Early', title: 'Breakfast & document check', desc: 'Passport, boarding passes, MDAC copy.' },
-      { time: '06:00', title: 'Transfer to KLIA', desc: 'KLIA Transit (budget) or Grab with duty-free bags.', cost: 'RM20–35 pp' },
+      { time: '06:00', title: 'Transfer to KLIA', desc: 'Grab RM70–110 per car split by 2, or KLIA Ekspres from KL Sentral RM55 pp.', cost: 'RM35–55 pp' },
       { time: 'Before flight', title: 'KLIA duty-free', desc: 'Last-minute prices if time allows.' },
     ],
   },
@@ -727,13 +748,15 @@ export function calcDayCost(day, optionValues) {
   const stepsCost = calcDayStepsCost(day);
   let min = stepsCost.min;
   let max = stepsCost.max;
+  // Option costs are flat point estimates — added as-is so the day card,
+  // the Options panel (+RM label) and BudgetSection extraCost all agree.
   if (day.hasOptions) {
     day.hasOptions.forEach((optKey) => {
       const opt = OPTIONS[optKey];
       const choice = opt.choices.find((c) => c.id === optionValues[optKey]);
       if (choice?.cost) {
-        min += choice.cost * 0.85;
-        max += choice.cost * 1.1;
+        min += choice.cost;
+        max += choice.cost;
       }
     });
   }
@@ -749,6 +772,15 @@ export function getTripDay() {
   today.setHours(0, 0, 0, 0);
   const diff = Math.floor((today - TRIP_START) / 86_400_000);
   return diff >= 0 && diff < DAYS.length ? diff + 1 : null;
+}
+
+// Days remaining before departure — positive before the trip, 0 on day 1,
+// null once the trip has started (the hero countdown hides itself).
+export function daysUntilTrip() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diff = Math.round((TRIP_START - today) / 86_400_000);
+  return diff > 0 ? diff : null;
 }
 
 export function calcTripCostRange(optionValues) {

@@ -1,23 +1,28 @@
-import { BUDGET, TRIP_META } from '../data/tripData';
+import { BUDGET, TRIP_META, EUR_RATE } from '../data/tripData';
+import SectionHeader from './SectionHeader';
 
-const EUR_RATE = 5; // 1€ ≈ 5 MYR
 const toEur = (rm) => Math.round(rm / EUR_RATE);
 
-// Derive core totals from the data — single source of truth
+// Derive core totals + buffer from the data — single source of truth
 const CORE = BUDGET.find(r => r.highlight);
-const CORE_MIN = CORE?.min ?? 2550;
-const CORE_MAX = CORE?.max ?? 3240;
+const CORE_MIN = CORE?.min ?? 0;
+const CORE_MAX = CORE?.max ?? 0;
+const BUFFER = BUDGET.find(r => r.category.toLowerCase().includes('buffer'));
 
 export default function BudgetSection({ extraCost }) {
-  const totalMin = CORE_MIN + extraCost;
-  const totalMax = CORE_MAX + extraCost;
+  // Second card: core + selected options, or core + suggested buffer when
+  // no paid options are picked (the label changes to match).
+  const totalMin = CORE_MIN + (extraCost > 0 ? extraCost : BUFFER?.min ?? 0);
+  const totalMax = CORE_MAX + (extraCost > 0 ? extraCost : BUFFER?.max ?? 0);
 
   return (
     <section id="budget" className="py-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-3">Per person · Twin-share · Foreigner rates</p>
-        <h2 className="font-display text-4xl sm:text-5xl font-extrabold mb-2">BUDGET</h2>
-        <p className="text-white/40 mb-10 text-sm">{TRIP_META.rate} · All prices per person</p>
+        <SectionHeader
+          eyebrow="Per person · Twin-share · Foreigner rates"
+          title="Budget"
+          subtitle={`${TRIP_META.rate} · All prices per person`}
+        />
 
         <div className="card overflow-hidden mb-6">
           <table className="w-full text-sm">
@@ -40,7 +45,7 @@ export default function BudgetSection({ extraCost }) {
                   <td className={`px-4 py-3.5 ${row.highlight ? 'font-bold text-brand-red' : 'text-white/80'}`}>
                     {row.category}
                   </td>
-                  <td className={`px-4 py-3.5 font-semibold font-mono text-sm ${row.highlight ? 'text-brand-red' : 'text-green-400'}`}>
+                  <td className={`px-4 py-3.5 font-semibold font-mono text-sm ${row.highlight ? 'text-brand-red' : 'text-brand-bright'}`}>
                     {row.min === row.max
                       ? `~${row.min.toLocaleString()}`
                       : `${row.min.toLocaleString()}–${row.max.toLocaleString()}`}
@@ -85,9 +90,9 @@ export default function BudgetSection({ extraCost }) {
           </div>
           <div className="card p-5 text-center">
             <p className="text-white/40 text-xs uppercase tracking-wider mb-2">
-              {extraCost > 0 ? 'With your options' : 'With RM500 buffer'}
+              {extraCost > 0 ? 'With your options' : `With RM${BUFFER?.min ?? 0}–${BUFFER?.max ?? 0} buffer`}
             </p>
-            <p className="text-2xl font-display font-bold text-green-400">
+            <p className="text-2xl font-display font-bold text-brand-bright">
               RM {totalMin.toLocaleString()}–{totalMax.toLocaleString()}
             </p>
             <p className="text-white/30 text-xs mt-1">≈ {toEur(totalMin)}–{toEur(totalMax)} €</p>

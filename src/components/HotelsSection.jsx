@@ -15,8 +15,9 @@
  */
 import { useState } from 'react';
 import { Bed, ExternalLink, MapPin, ChevronDown, ChevronUp, CheckCircle2, Circle, AlertTriangle } from 'lucide-react';
-import { HOTELS, HOTEL_BUDGET_MAX } from '../data/tripData';
+import { HOTELS, HOTEL_BUDGET_MAX, EUR_RATE } from '../data/tripData';
 import { useBookings } from '../hooks/useBookings';
+import SectionHeader from './SectionHeader';
 
 const TIER_STYLE = {
   Budget:      { badge: 'bg-white/10 text-white/60 border-white/10', border: 'border-surface-border', dot: 'bg-white/30' },
@@ -24,8 +25,7 @@ const TIER_STYLE = {
   Splurge:     { badge: 'bg-brand-red/15 text-brand-red border-brand-red/20', border: 'border-brand-red/20', dot: 'bg-brand-red' },
 };
 
-const EUR = 5; // 1€ ≈ 5 MYR
-const toEur = (rm) => Math.round(rm / EUR);
+const toEur = (rm) => Math.round(rm / EUR_RATE);
 
 function HotelCard({ hotel, nightCount, bookings, onToggle, onUpdatePaid }) {
   const s = TIER_STYLE[hotel.tier];
@@ -231,15 +231,15 @@ export default function HotelsSection() {
 
   return (
     <section id="hotels" className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
-      <div className="flex items-end justify-between mb-6">
-        <div>
-          <p className="text-xs text-brand-red font-bold uppercase tracking-widest mb-2">Where to sleep</p>
-          <h2 className="font-display text-3xl sm:text-4xl font-extrabold">Hotels</h2>
-        </div>
-        <p className="text-sm text-white/30 text-right hidden sm:block">
-          3 options per city<br />Budget → Splurge
-        </p>
-      </div>
+      <SectionHeader
+        eyebrow="Where to sleep"
+        title="Hotels"
+        right={
+          <p className="text-sm text-white/30 text-right hidden sm:block">
+            3 options per city<br />Budget → Splurge
+          </p>
+        }
+      />
 
       {/* Hotel budget bar */}
       <div className={`mb-6 p-4 rounded-2xl border ${
@@ -257,7 +257,7 @@ export default function HotelsSection() {
               RM {hotelSpend.toLocaleString()}
             </span>
             <span className="text-xs text-white/30 font-mono"> / {HOTEL_BUDGET_MAX.toLocaleString()}</span>
-            <p className="text-[11px] text-white/20 font-mono">≈ {toEur(hotelSpend)} € / {toEur(HOTEL_BUDGET_MAX)} € max pp</p>
+            <p className="text-[11px] text-white/20 font-mono">≈ {toEur(hotelSpend)} € / {toEur(HOTEL_BUDGET_MAX)} € max (room total)</p>
           </div>
         </div>
         <div className="h-2 bg-surface-elevated rounded-full overflow-hidden">
@@ -294,7 +294,8 @@ export default function HotelsSection() {
       </div>
 
       <p className="mt-6 text-xs text-white/25 text-center">
-        All prices per room/night (÷2 for twin-share) · Book 2–3 weeks ahead for July peak season
+        All prices per room/night (÷2 for twin-share) · Book 2–3 weeks ahead for July peak season<br />
+        Expect at check-in: RM10/room/night tourism tax (cash) + a refundable deposit of ~RM50–200/room
       </p>
     </section>
   );

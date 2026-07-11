@@ -3,6 +3,7 @@
  * No props. Pure display — reads CITIES array from tripData.js.
  */
 import { CITIES } from '../data/tripData';
+import SectionHeader from './SectionHeader';
 
 const CITY_BORDER = [
   'border-l-brand-red',
@@ -16,8 +17,10 @@ export default function RouteSection() {
   return (
     <section id="route" className="py-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-3">13 nights</p>
-        <h2 className="font-display text-4xl sm:text-5xl font-extrabold mb-10">THE ROUTE</h2>
+        <SectionHeader
+          eyebrow={`${CITIES.reduce((s, c) => s + c.nights, 0)} nights`}
+          title="The route"
+        />
 
         <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:-mx-6 sm:px-6">
           {CITIES.map((city, i) => (
